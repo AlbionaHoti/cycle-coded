@@ -20,12 +20,14 @@ node server.mjs clear
 node server.mjs help
 ```
 
-In an interactive terminal, `get` / `set` / import print **ASCII art** + mode box (stderr) and a copy-paste header on stdout.
+In an interactive terminal, `get` / `set` / import print **professional ASCII** (FIGlet-style wordmark, density-mapped phase moons, progress bar) on stderr + a copy-paste header on stdout.
+
+Phase plates: menstrual (dark) · follicular (waxing) · ovulatory (full) · luteal (waning).  
+Original art; density-map language is classic terminal moon tradition (see e.g. public moon-phase CLIs on GitHub) — nothing vendored from other repos.
 
 Pipes stay machine-readable:
 
 ```bash
-node server.mjs get | jq .          # force non-pretty? use:
 CYCLE_CODED_JSON=1 node server.mjs get
 ```
 

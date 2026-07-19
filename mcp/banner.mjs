@@ -1,18 +1,37 @@
 /**
- * Terminal ASCII art for cycle-coded CLI.
+ * Terminal presentation for cycle-coded CLI.
+ *
+ * Visual language inspired by classic density-mapped moon ASCII
+ * (e.g. public moon-phase CLI art traditions — original plates below,
+ * not copied from any repo) and clean product CLIs (figlet wordmarks,
+ * boxed status panels).
+ *
+ * Art is original for cycle-coded. No third-party art files vendored.
  * Human-facing only — keep machine JSON on stdout when not a TTY.
  */
 
 const RESET = "\x1b[0m";
-const DIM = "\x1b[2m";
 const BOLD = "\x1b[1m";
+const DIM = "\x1b[2m";
+
+// Soft product palette (256-color; falls back clean with NO_COLOR)
 const PINK = "\x1b[38;5;218m";
 const ROSE = "\x1b[38;5;204m";
-const CREAM = "\x1b[38;5;255m";
-const MUTED = "\x1b[38;5;246m";
+const PLUM = "\x1b[38;5;176m";
+const INK = "\x1b[38;5;255m";
+const MUTED = "\x1b[38;5;245m";
+const SLATE = "\x1b[38;5;240m";
+const GOLD = "\x1b[38;5;222m";
+const MINT = "\x1b[38;5;151m";
+const STEEL = "\x1b[38;5;110m";
+const ASH = "\x1b[38;5;250m";
 
 function colorEnabled() {
-  return Boolean(process.stderr.isTTY || process.stdout.isTTY) && !process.env.NO_COLOR;
+  return (
+    Boolean(process.stderr.isTTY || process.stdout.isTTY) &&
+    !process.env.NO_COLOR &&
+    process.env.TERM !== "dumb"
+  );
 }
 
 function c(code, s) {
@@ -20,90 +39,159 @@ function c(code, s) {
   return `${code}${s}${RESET}`;
 }
 
-/** Wordmark */
+function stripAnsi(s) {
+  return String(s).replace(/\x1b\[[0-9;]*m/g, "");
+}
+
+function padVisible(s, width) {
+  const n = stripAnsi(s).length;
+  return s + " ".repeat(Math.max(0, width - n));
+}
+
+/** Compact professional wordmark (not cartoon) */
 export function wordmark() {
+  // "cycle" in a small block face + coded subtitle
+  const logo = [
+    " ██████╗██╗   ██╗ ██████╗██╗     ███████╗",
+    "██╔════╝╚██╗ ██╔╝██╔════╝██║     ██╔════╝",
+    "██║      ╚████╔╝ ██║     ██║     █████╗  ",
+    "██║       ╚██╔╝  ██║     ██║     ██╔══╝  ",
+    "╚██████╗   ██║   ╚██████╗███████╗███████╗",
+    " ╚═════╝   ╚═╝    ╚═════╝╚══════╝╚══════╝",
+  ];
   return [
-    c(PINK, "   ╭──────────────────────────────────────╮"),
-    c(PINK, "   │") +
-      c(BOLD + CREAM, "   c y c l e - c o d e d   ") +
-      c(ROSE, "✦") +
-      c(PINK, "        │"),
-    c(PINK, "   │") +
-      c(MUTED, "   local · glossary · no cloud      ") +
-      c(PINK, "│"),
-    c(PINK, "   ╰──────────────────────────────────────╯"),
+    ...logo.map((l) => c(ROSE, l)),
+    c(MUTED, "  c o d e d") +
+      c(SLATE, "  ·  agent modes  ·  local only"),
   ].join("\n");
 }
 
-const PHASE_ART = {
-  menstrual: [
-    "        ·  ·  ·",
-    "     ·   low power   ·",
-    "        bare min",
-    "          ___",
-    "         (   )",
-    "          ‾‾‾",
-  ],
-  follicular: [
-    "          *",
-    "       *  |  *",
-    "     *   /|\\   *",
-    "        building",
-    "         /   \\",
-  ],
-  ovulatory: [
-    "       \\  ★  /",
-    "        \\ | /",
-    "      —  (•)  —",
-    "        / | \\",
-    "       /  post  \\",
-  ],
-  luteal: [
-    "        ╱╲",
-    "       ╱  ╲   ruthless",
-    "      ╱_  _╲",
-    "        ||",
-    "       cut it",
-  ],
-  default: [
-    "          ✦",
-    "       ·  │  ·",
-    "      ────┼────",
-    "       ·  │  ·",
-    "          ✦",
-  ],
+/**
+ * Density moons — classic @#%:·. plate language.
+ * Mapped to cycle energy, not lunar calendar claims.
+ */
+const PLATES = {
+  // menstrual — dark / bare minimum
+  menstrual: {
+    color: ASH,
+    label: "BARE MINIMUM",
+    art: [
+      "            .·····.        ",
+      "         .··········.      ",
+      "       .··············.    ",
+      "      ··················   ",
+      "      ··················   ",
+      "       ················    ",
+      "         ············      ",
+      "            ······         ",
+    ],
+  },
+  // follicular — waxing light / building
+  follicular: {
+    color: MINT,
+    label: "BUILDING",
+    art: [
+      "            .····#@        ",
+      "         .·······###@      ",
+      "       .·········####@     ",
+      "      ···········#####@    ",
+      "      ···········#####@    ",
+      "       ··········####@     ",
+      "         ········###@      ",
+      "            ·····#@        ",
+    ],
+  },
+  // ovulatory — full / post it
+  ovulatory: {
+    color: GOLD,
+    label: "POST IT",
+    art: [
+      "            @@@@@@@@       ",
+      "         @@@@@@@@@@@@@@    ",
+      "       @@@@@@@@@@@@@@@@@@  ",
+      "      @@@@@@@@@@@@@@@@@@@@ ",
+      "      @@@@@@@@@@@@@@@@@@@@ ",
+      "       @@@@@@@@@@@@@@@@@@  ",
+      "         @@@@@@@@@@@@@@    ",
+      "            @@@@@@@@       ",
+    ],
+  },
+  // luteal — waning hard light / ruthless
+  luteal: {
+    color: STEEL,
+    label: "RUTHLESS",
+    art: [
+      "            @@#···.        ",
+      "         @@@##······.      ",
+      "       @@@@##········.     ",
+      "      @@@@@##·········.    ",
+      "      @@@@@##·········.    ",
+      "       @@@@##········.     ",
+      "         @@@##······.      ",
+      "            @@#···.        ",
+    ],
+  },
+  // default / import / unknown
+  default: {
+    color: PLUM,
+    label: "CYCLE",
+    art: [
+      "            ··##@@··       ",
+      "         ··###@@@@###·     ",
+      "       ·###@@@@@@@@###·    ",
+      "      ·##@@@@@@@@@@@@##·   ",
+      "      ·##@@@@@@@@@@@@##·   ",
+      "       ·###@@@@@@@@###·    ",
+      "         ··###@@@@###·     ",
+      "            ··##@@··       ",
+    ],
+  },
 };
 
 export function phaseArt(phase) {
-  const lines = PHASE_ART[phase] || PHASE_ART.default;
-  return lines.map((l) => c(ROSE, l)).join("\n");
+  const plate = PLATES[phase] || PLATES.default;
+  const lines = plate.art.map((l) => c(plate.color, l));
+  const tag = c(DIM + MUTED, `  ${plate.label}`);
+  return lines.join("\n") + "\n" + tag;
 }
 
-export function box(lines) {
-  const width = Math.max(...lines.map((l) => stripAnsi(l).length), 28);
-  const top = c(PINK, "┌" + "─".repeat(width + 2) + "┐");
-  const bot = c(PINK, "└" + "─".repeat(width + 2) + "┘");
-  const mid = lines.map((l) => {
-    const pad = width - stripAnsi(l).length;
+/** Day-in-cycle progress (editorial, not medical) */
+export function progressBar(day, total, width = 22) {
+  if (!day || !total || total < 1) {
+    return c(SLATE, "[" + "·".repeat(width) + "]");
+  }
+  const d = Math.max(1, Math.min(total, Number(day)));
+  const filled = Math.round((d / total) * width);
+  const bar =
+    "█".repeat(Math.max(0, filled)) + "░".repeat(Math.max(0, width - filled));
+  return (
+    c(ROSE, "[") +
+    c(PINK, bar.slice(0, filled)) +
+    c(SLATE, bar.slice(filled)) +
+    c(ROSE, "]") +
+    c(MUTED, `  ${d}/${total}`)
+  );
+}
+
+export function box(rows) {
+  const width = Math.max(...rows.map((l) => stripAnsi(l).length), 36);
+  const top = c(SLATE, "╭" + "─".repeat(width + 2) + "╮");
+  const bot = c(SLATE, "╰" + "─".repeat(width + 2) + "╯");
+  const mid = rows.map((l) => {
     return (
-      c(PINK, "│") +
+      c(SLATE, "│") +
       " " +
-      l +
-      " ".repeat(Math.max(0, pad)) +
+      padVisible(l, width) +
       " " +
-      c(PINK, "│")
+      c(SLATE, "│")
     );
   });
   return [top, ...mid, bot].join("\n");
 }
 
-function stripAnsi(s) {
-  return s.replace(/\x1b\[[0-9;]*m/g, "");
-}
-
 /**
- * Pretty status for `get` / after import.
- * Writes to stderr so stdout can stay JSON for pipes.
+ * Pretty status for get / set.
+ * stderr so stdout can stay pipe-friendly.
  */
 export function printStatus({ header, cycle, modes, statePath, extraLines = [] }) {
   const out = process.stderr;
@@ -112,24 +200,36 @@ export function printStatus({ header, cycle, modes, statePath, extraLines = [] }
   out.write(phaseArt(cycle?.phase) + "\n\n");
 
   const lines = [];
-  if (header) lines.push(c(BOLD + CREAM, header));
+  if (header) {
+    lines.push(c(BOLD + INK, header));
+  }
   if (cycle?.configured) {
-    lines.push(c(MUTED, `day ${cycle.dayInCycle} / ${cycle.cycleLength}  ·  ${cycle.confidence} confidence`));
+    lines.push(
+      progressBar(cycle.dayInCycle, cycle.cycleLength) +
+        c(MUTED, `  ·  ${cycle.confidence || "—"}`)
+    );
     if (cycle.lastPeriodStart) {
-      lines.push(c(MUTED, `last start  ${cycle.lastPeriodStart}`));
+      lines.push(c(MUTED, `anchor   ${cycle.lastPeriodStart}`));
+    }
+    if (cycle.energy) {
+      lines.push(c(MUTED, `energy   ${cycle.energy}`));
     }
   } else {
-    lines.push(c(MUTED, "no period start set — say a mode or: set YYYY-MM-DD"));
+    lines.push(c(MUTED, "no anchor set — import Health or: set YYYY-MM-DD"));
   }
+
   const modeKeys = Object.keys(modes || {}).filter((k) => modes[k]);
   if (modeKeys.length) {
-    lines.push(c(MUTED, "modes  " + modeKeys.join(", ")));
+    lines.push(c(PLUM, "modes    " + modeKeys.join(" · ")));
   }
   for (const e of extraLines) lines.push(c(MUTED, e));
-  if (statePath) lines.push(c(DIM, statePath));
+  if (statePath) lines.push(c(DIM + SLATE, statePath));
 
   out.write(box(lines) + "\n");
-  out.write(c(MUTED, "  not medical advice · data stays on this machine") + "\n\n");
+  out.write(
+    c(DIM + MUTED, "  not medical advice  ·  data never leaves this machine") +
+      "\n\n"
+  );
 }
 
 export function printImportDone({ periodCount, lastStart, avg, statePath }) {
@@ -139,32 +239,41 @@ export function printImportDone({ periodCount, lastStart, avg, statePath }) {
   out.write(phaseArt("default") + "\n\n");
   out.write(
     box([
-      c(BOLD + CREAM, "import complete ✦"),
-      c(MUTED, `${periodCount} periods  ·  avg ${avg}d`),
-      c(MUTED, `last start  ${lastStart}`),
-      c(DIM, statePath || ""),
+      c(BOLD + INK, "import complete"),
+      c(MUTED, `${periodCount} cycles read  ·  avg length ${avg}d`),
+      c(MUTED, `latest anchor   ${lastStart}`),
+      c(DIM + SLATE, statePath || ""),
     ]) + "\n"
   );
-  out.write(c(MUTED, "  local only · not medical advice") + "\n");
+  out.write(c(DIM + MUTED, "  local only  ·  not medical advice") + "\n");
 }
 
 export function printCleared() {
   const out = process.stderr;
   out.write("\n");
   out.write(wordmark() + "\n\n");
-  out.write(c(MUTED, "   state wiped · ~/.cycle-coded gone") + "\n");
-  out.write(c(MUTED, "   re-import or: set YYYY-MM-DD") + "\n\n");
+  out.write(
+    box([
+      c(BOLD + INK, "state cleared"),
+      c(MUTED, "re-import Health or: set YYYY-MM-DD"),
+    ]) + "\n\n"
+  );
 }
 
 export function printHelp() {
   const out = process.stdout.isTTY ? process.stdout : process.stderr;
   out.write("\n");
   out.write(wordmark() + "\n\n");
-  out.write(`  ${c(BOLD, "usage")}\n`);
-  out.write(`    node server.mjs get\n`);
-  out.write(`    node server.mjs set YYYY-MM-DD [avgLength]\n`);
-  out.write(`    node server.mjs clear\n`);
-  out.write(`    node import-health.mjs path/to/export.xml\n`);
-  out.write(`    node import-health.mjs --csv periods.csv\n\n`);
-  out.write(`  ${c(MUTED, "pretty art when terminal is interactive; JSON on stdout for pipes")}\n\n`);
+  out.write(c(BOLD + INK, "  commands") + "\n");
+  out.write(c(MUTED, "    get                 show mode + art") + "\n");
+  out.write(c(MUTED, "    set YYYY-MM-DD [n]  set last period start") + "\n");
+  out.write(c(MUTED, "    clear               wipe local state") + "\n");
+  out.write(c(MUTED, "    banner              art only") + "\n");
+  out.write(c(MUTED, "    help") + "\n\n");
+  out.write(c(BOLD + INK, "  import") + "\n");
+  out.write(c(MUTED, "    node import-health.mjs path/to/export.xml") + "\n");
+  out.write(c(MUTED, "    node import-health.mjs --csv periods.csv") + "\n\n");
+  out.write(
+    c(SLATE, "  TTY → art  ·  pipe/JSON → CYCLE_CODED_JSON=1") + "\n\n"
+  );
 }
