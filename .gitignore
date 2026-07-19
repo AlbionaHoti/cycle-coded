@@ -1,5 +1,32 @@
+# dependencies / junk
 node_modules/
 .DS_Store
 *.log
 .env
+.env.*
+
+# cycle-coded local state (never commit period data)
 .cycle-coded/
+**/.cycle-coded/
+state.json
+**/state.json
+
+# Apple Health / personal health exports
+apple_health_export/
+**/apple_health_export/
+Export.zip
+export.zip
+export.xml
+Export.xml
+export_cda.xml
+**/export.xml
+**/Export.xml
+**/export_cda.xml
+*.healthexport
+*HealthExport*
+
+# local period CSVs people might drop in the repo while testing
+periods.csv
+**/periods.csv
+my-periods.csv
+cycle-import*.csv
