@@ -331,7 +331,8 @@ function handleMessage(msg) {
 
 // CLI helpers: node server.mjs get | clear | set 2026-07-01 28
 const cli = process.argv[2];
-if (cli && !cli.startsWith("-") && process.stdin.isTTY) {
+// CLI works without a TTY (scripts/automation). MCP stdio starts only when no CLI verb.
+if (cli && !cli.startsWith("-")) {
   if (cli === "get") {
     const state = loadState();
     const cycle = computeCycle(state);
