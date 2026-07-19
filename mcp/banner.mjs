@@ -50,7 +50,7 @@ function padVisible(s, width) {
 
 /** Compact professional wordmark (not cartoon) */
 export function wordmark() {
-  // "cycle" in a small block face + coded subtitle
+  // Big mark is CYCLE only — "coded" lives in the package name, not the banner.
   const logo = [
     " ██████╗██╗   ██╗ ██████╗██╗     ███████╗",
     "██╔════╝╚██╗ ██╔╝██╔════╝██║     ██╔════╝",
@@ -61,8 +61,7 @@ export function wordmark() {
   ];
   return [
     ...logo.map((l) => c(ROSE, l)),
-    c(MUTED, "  c o d e d") +
-      c(SLATE, "  ·  agent modes  ·  local only"),
+    c(SLATE, "  agent modes  ·  local only"),
   ].join("\n");
 }
 
