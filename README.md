@@ -204,9 +204,9 @@ answer tempo · risk · tone · artifact change
 GLOSSARY.md                 ← start here
 glossary/                   ← every term = policy file
 skills/cycle-coded/SKILL.md ← agent instructions
-mcp/                        ← local-first phase + mode state
+mcp/                        ← local-only phase + mode state + health import
 landing/index.html          ← community face
-research/                   ← why this shape (viral skill + spaces)
+docs/EXPORTS.md             ← Apple Health / app export guides
 ```
 
 ---
