@@ -18,6 +18,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { printStatus, printCleared, printHelp } from "./banner.mjs";
 
 const STATE_DIR = process.env.CYCLE_CODED_HOME || path.join(os.homedir(), ".cycle-coded");
 const STATE_FILE = path.join(STATE_DIR, "state.json");
@@ -333,31 +334,75 @@ function handleMessage(msg) {
 const cli = process.argv[2];
 // CLI works without a TTY (scripts/automation). MCP stdio starts only when no CLI verb.
 if (cli && !cli.startsWith("-")) {
+  const pretty = Boolean(process.stdout.isTTY) && process.env.CYCLE_CODED_JSON !== "1";
+
+  if (cli === "help" || cli === "--help" || cli === "-h") {
+    printHelp();
+    process.exit(0);
+  }
+
   if (cli === "get") {
     const state = loadState();
     const cycle = computeCycle(state);
-    console.log(JSON.stringify({ cycle, modes: state.modes, header: buildHeader(state, cycle) }, null, 2));
+    const header = buildHeader(state, cycle);
+    const payload = { cycle, modes: state.modes, header, statePath: STATE_FILE };
+    if (pretty) {
+      printStatus({
+        header,
+        cycle,
+        modes: state.modes,
+        statePath: STATE_FILE,
+      });
+      // still print compact header on stdout for copy-paste
+      console.log(header);
+    } else {
+      console.log(JSON.stringify(payload, null, 2));
+    }
     process.exit(0);
   }
+
   if (cli === "clear") {
-    console.log(JSON.stringify(handleTool("cycle_clear"), null, 2));
+    const result = handleTool("cycle_clear");
+    if (pretty) {
+      printCleared();
+    } else {
+      console.log(JSON.stringify(result, null, 2));
+    }
     process.exit(0);
   }
+
   if (cli === "set" && process.argv[3]) {
-    console.log(
-      JSON.stringify(
-        handleTool("cycle_set_period", {
-          last_period_start: process.argv[3],
-          avg_cycle_length: process.argv[4] ? Number(process.argv[4]) : 28,
-        }),
-        null,
-        2
-      )
-    );
+    handleTool("cycle_set_period", {
+      last_period_start: process.argv[3],
+      avg_cycle_length: process.argv[4] ? Number(process.argv[4]) : 28,
+    });
+    const state = loadState();
+    const cycle = computeCycle(state);
+    const header = buildHeader(state, cycle);
+    if (pretty) {
+      printStatus({ header, cycle, modes: state.modes, statePath: STATE_FILE });
+      console.log(header);
+    } else {
+      console.log(
+        JSON.stringify({ ok: true, cycle, modes: state.modes, header }, null, 2)
+      );
+    }
     process.exit(0);
   }
+
+  if (cli === "banner") {
+    const state = loadState();
+    const cycle = computeCycle(state);
+    printStatus({
+      header: buildHeader(state, cycle),
+      cycle,
+      modes: state.modes,
+      statePath: STATE_FILE,
+    });
+    process.exit(0);
+  }
+
   if (cli === "test-phase") {
-    // quick self-check without full test runner
     const s = { ...DEFAULT_STATE, lastPeriodStart: "2026-07-01", avgCycleLength: 28, modes: {} };
     console.log(computeCycle(s, parseDate("2026-07-02")));
     console.log(computeCycle(s, parseDate("2026-07-10")));
@@ -365,6 +410,10 @@ if (cli && !cli.startsWith("-")) {
     console.log(computeCycle(s, parseDate("2026-07-25")));
     process.exit(0);
   }
+
+  console.error(`unknown command: ${cli}`);
+  printHelp();
+  process.exit(1);
 }
 
 // Stdio MCP only when this file is the entrypoint (not when imported by tests)

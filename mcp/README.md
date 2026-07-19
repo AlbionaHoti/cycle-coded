@@ -14,8 +14,19 @@ Override with `CYCLE_CODED_HOME`.
 
 ```bash
 node server.mjs set 2026-07-01 28   # last period start, avg length
-node server.mjs get
+node server.mjs get                 # ASCII banner + header (TTY)
+node server.mjs banner              # art only
 node server.mjs clear
+node server.mjs help
+```
+
+In an interactive terminal, `get` / `set` / import print **ASCII art** + mode box (stderr) and a copy-paste header on stdout.
+
+Pipes stay machine-readable:
+
+```bash
+node server.mjs get | jq .          # force non-pretty? use:
+CYCLE_CODED_JSON=1 node server.mjs get
 ```
 
 ## Import from Apple Health or CSV

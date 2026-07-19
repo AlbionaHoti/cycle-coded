@@ -21,6 +21,7 @@ import path from "node:path";
 import readline from "node:readline";
 import { createReadStream } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { printImportDone, wordmark } from "./banner.mjs";
 
 const STATE_DIR = process.env.CYCLE_CODED_HOME || path.join(os.homedir(), ".cycle-coded");
 const STATE_FILE = path.join(STATE_DIR, "state.json");
@@ -242,6 +243,16 @@ async function main() {
     disclaimer: "Output policy only. Not medical advice. Data stayed on this machine.",
   };
 
+  const pretty = Boolean(process.stderr.isTTY) && process.env.CYCLE_CODED_JSON !== "1";
+
+  if (pretty) {
+    process.stderr.write("\n" + wordmark() + "\n");
+    process.stderr.write(
+      dryRun ? "\n   dry-run · nothing written\n" : "\n   import · local only\n"
+    );
+  }
+
+  // machine-readable on stdout (pipes / scripts)
   console.log(JSON.stringify(out, null, 2));
 
   if (starts.length === 0) {
@@ -250,7 +261,13 @@ async function main() {
   }
 
   if (dryRun) {
-    console.error("\n--dry-run: state not written");
+    if (pretty) {
+      process.stderr.write(
+        `\n   would write ${summary.periodCount} periods · last ${summary.lastPeriodStart} · avg ${avg}d\n\n`
+      );
+    } else {
+      console.error("\n--dry-run: state not written");
+    }
     return;
   }
 
@@ -265,9 +282,20 @@ async function main() {
     periodCount: starts.length,
   };
   saveState(state);
-  console.error(`\nWrote ${STATE_FILE}`);
-  console.error(`Header seed: last start ${state.lastPeriodStart}, avg ${state.avgCycleLength}d`);
-  console.error(`Verify: node server.mjs get`);
+
+  if (pretty) {
+    printImportDone({
+      periodCount: summary.periodCount,
+      lastStart: summary.lastPeriodStart,
+      avg,
+      statePath: STATE_FILE,
+    });
+    process.stderr.write("   next: node server.mjs get\n\n");
+  } else {
+    console.error(`\nWrote ${STATE_FILE}`);
+    console.error(`Header seed: last start ${state.lastPeriodStart}, avg ${state.avgCycleLength}d`);
+    console.error(`Verify: node server.mjs get`);
+  }
 }
 
 const isMain =
