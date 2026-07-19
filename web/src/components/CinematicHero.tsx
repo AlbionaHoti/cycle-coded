@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { ArrowUpRight, Menu, X } from 'lucide-react'
+import { ArrowUpRight, Check, Copy, Menu, X } from 'lucide-react'
+
+const INSTALL_CMD = `git clone https://github.com/AlbionaHoti/cycle-coded ./cycle-coded && cd cycle-coded && bash install.sh`
 
 const VIDEOS = [
   {
@@ -40,10 +42,26 @@ export function CinematicHero() {
   const [activeVideo, setActiveVideo] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const isDark = activeVideo === 2 // Deep Woods / luteal
   const ink = isDark ? '#182C41' : '#ffffff'
   const inkSoft = isDark ? 'rgba(24, 44, 65, 0.75)' : 'rgba(255,255,255,0.85)'
+
+  async function copyInstall() {
+    try {
+      await navigator.clipboard.writeText(INSTALL_CMD)
+    } catch {
+      const ta = document.createElement('textarea')
+      ta.value = INSTALL_CMD
+      document.body.appendChild(ta)
+      ta.select()
+      document.execCommand('copy')
+      document.body.removeChild(ta)
+    }
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 1600)
+  }
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -212,31 +230,59 @@ export function CinematicHero() {
           </h1>
 
           <p
-            className="max-w-xl text-sm sm:text-base leading-relaxed mb-8 sm:mb-10 transition-colors duration-700 px-2"
+            className="max-w-xl text-sm sm:text-base leading-relaxed mb-6 sm:mb-8 transition-colors duration-700 px-2"
             style={{ fontFamily: 'system-ui, sans-serif', color: inkSoft }}
           >
             Follicular you ships. Luteal you deletes. Mercury said no force-push.
-            One skill for Claude, Codex, ChatGPT, Gemini, Grok — a dialect, not a wellness app.
+            One skill — a dialect, not a wellness app.
           </p>
 
-          {/* CTA pill */}
-          <div
-            className="liquid-glass-hero rounded-full flex items-center gap-1 p-1.5 w-full max-w-[320px] sm:max-w-sm mb-8 sm:mb-10"
-          >
-            <a
-              href="#install"
-              className="flex-1 text-center rounded-full bg-white text-black text-sm font-medium py-2.5 sm:py-3 px-4 hover:bg-white/90 transition-colors"
-              style={{ fontFamily: 'system-ui, sans-serif' }}
+          {/* One install command — transparent glass on the video */}
+          <div className="w-full max-w-2xl mx-auto mb-6 sm:mb-8 px-1">
+            <div className="liquid-glass-hero rounded-2xl overflow-hidden text-left shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+              <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-white/10">
+                <span
+                  className="text-[11px] sm:text-xs tracking-wide uppercase opacity-80"
+                  style={{ fontFamily: 'ui-monospace, monospace', color: ink }}
+                >
+                  install · one command
+                </span>
+                <button
+                  type="button"
+                  onClick={copyInstall}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 hover:bg-white/20 px-3 py-1 text-[11px] sm:text-xs text-white transition-colors"
+                  style={{ fontFamily: 'system-ui, sans-serif' }}
+                >
+                  {copied ? (
+                    <>
+                      <Check size={12} /> Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={12} /> Copy
+                    </>
+                  )}
+                </button>
+              </div>
+              <pre
+                className="px-4 py-3.5 sm:py-4 text-[11px] sm:text-[13px] leading-relaxed overflow-x-auto whitespace-pre-wrap break-all m-0"
+                style={{
+                  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                  color: ink,
+                }}
+              >
+                <span className="opacity-70">$ </span>
+                {INSTALL_CMD}
+              </pre>
+            </div>
+            <p
+              className="mt-3 text-[11px] sm:text-xs opacity-70 transition-colors duration-700"
+              style={{ fontFamily: 'system-ui, sans-serif', color: ink }}
             >
-              Install the joke
-            </a>
-            <a
-              href="https://github.com/AlbionaHoti/cycle-coded"
-              className="rounded-full p-2.5 sm:p-3 text-white hover:bg-white/10 transition-colors"
-              aria-label="GitHub"
-            >
-              <ArrowUpRight size={18} />
-            </a>
+              then <code className="opacity-90">/cycle-coded</code> ·{' '}
+              <code className="opacity-90">$cycle-coded</code> · or paste{' '}
+              <code className="opacity-90">instructions/UNIVERSAL.md</code>
+            </p>
           </div>
 
           {/* Video / phase switcher */}
