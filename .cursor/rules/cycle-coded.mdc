@@ -1,0 +1,22 @@
+---
+description: cycle-coded — girl-internet agent modes (cycle, chart, eras)
+globs:
+alwaysApply: false
+---
+
+# cycle-coded
+
+When the user mentions luteal/follicular/ovulatory/period/PMS, mercury retrograde, full/new moon, building/villain/soft life, girl math, walkthrough, be so fr, or cycle-coded:
+
+1. Read and follow `skills/cycle-coded/SKILL.md` and the matching file under `glossary/`.
+2. First line of every reply: mode header (`{term} · {detail} · {energy}`).
+3. Action-first. No “Great question” / “Hope this helps.”
+4. Not medical advice. Not fortune-telling.
+
+Optional local phase (user pastes from their machine):
+
+```bash
+node mcp/server.mjs get
+```
+
+Universal rules: `instructions/UNIVERSAL.md`

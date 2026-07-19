@@ -34,71 +34,40 @@ Cycle dates (if you import them) stay on **your** computer. No cycle-coded serve
 
 ---
 
-## Install
+## Install — Claude, Codex, ChatGPT, Gemini, Grok, Cursor
 
-### Claude Code
+**One skill. Same rules. Everywhere.**
 
 ```bash
 git clone https://github.com/AlbionaHoti/cycle-coded ./cycle-coded
-claude plugin marketplace add ./cycle-coded
-claude plugin install cycle-coded@cycle-coded
+cd cycle-coded
+bash install.sh          # links skill for Claude + Codex + Agent Skills
 ```
 
-In Claude Code: `/cycle-coded`  
-Or just say: *I’m luteal* / *mercury retrograde* / *building era*.
+| Surface | How |
+|---|---|
+| **Claude Code** | `claude plugin marketplace add ./cycle-coded` → `claude plugin install cycle-coded@cycle-coded` → `/cycle-coded` |
+| **Codex** | `codex plugin marketplace add AlbionaHoti/cycle-coded --ref main` → `codex plugin add cycle-coded@cycle-coded` → `$cycle-coded` |
+| **skills.sh** | `npx skills add AlbionaHoti/cycle-coded --skill cycle-coded` |
+| **ChatGPT web** | Paste [`instructions/UNIVERSAL.md`](instructions/UNIVERSAL.md) into custom / project instructions |
+| **Gemini** | Paste `UNIVERSAL.md` or use repo [`GEMINI.md`](GEMINI.md) |
+| **Grok** | Paste `UNIVERSAL.md` into custom instructions |
+| **Cursor** | Repo ships [`.cursor/rules/cycle-coded.mdc`](.cursor/rules/cycle-coded.mdc) |
+| **Any chat** | Paste `UNIVERSAL.md` as system prompt |
 
-### Codex
+Full detail: **[INSTALL.md](INSTALL.md)**
+
+### Your real phase (local only — Apple Health)
 
 ```bash
-codex plugin marketplace add AlbionaHoti/cycle-coded --ref main
-codex plugin add cycle-coded@cycle-coded
-```
-
-### Always-on (optional)
-
-Add to `~/.claude/CLAUDE.md`:
-
-```markdown
-## Output style
-Follow the cycle-coded skill. Use mode headers. Obey glossary policies for any cycle/astro/era term I use. Not medical advice.
-```
-
-### MCP (optional — phase math + local state)
-
-```bash
-# ~/.claude or Claude Desktop mcp config
-{
-  "mcpServers": {
-    "cycle-coded": {
-      "command": "node",
-      "args": ["/absolute/path/to/cycle-coded/mcp/server.mjs"]
-    }
-  }
-}
-```
-
-```bash
-node mcp/server.mjs set 2026-07-01 28
+node mcp/import-health.mjs path/to/export.xml
 node mcp/server.mjs get
+node scripts/test-local.mjs    # paste packs for every UI → /tmp only
 ```
 
-### Apple Health / app exports (recommended if you already track)
+Then paste **only the header** (e.g. `follicular · day 12 · building`) into ChatGPT / Gemini / Grok — never the Health XML.
 
-Your phone already has the history — **don’t retype it.**
-
-```bash
-# after Health → profile → Export All Health Data → unzip on Mac
-node mcp/import-health.mjs ~/Downloads/apple_health_export/apple_health_export/export.xml
-
-# or a simple CSV of period starts
-node mcp/import-health.mjs --csv periods.csv
-```
-
-Full guides (Apple Health, Flo, Clue, CSV, manual): **[docs/EXPORTS.md](docs/EXPORTS.md)**
-
-State lives in `~/.cycle-coded/state.json` only. See [PRIVACY.md](PRIVACY.md).
-
-More: [INSTALL.md](INSTALL.md) · [mcp/README.md](mcp/README.md)
+State: `~/.cycle-coded/` · [PRIVACY.md](PRIVACY.md) · [docs/EXPORTS.md](docs/EXPORTS.md)
 
 ---
 

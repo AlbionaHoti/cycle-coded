@@ -333,19 +333,65 @@ Next: implement record → blob. Skip auth until the slice works.</div>
     </section>
 
     <section>
-      <h2>install in one breath</h2>
-      <p>Clone, add the marketplace, install the plugin. Then <code>/cycle-coded</code> or just say <em>i'm luteal</em>.</p>
-      <div class="code-block" data-copy-block>
+      <h2>install everywhere</h2>
+      <p>Same skill for Claude, Codex, ChatGPT, Gemini, Grok, Cursor. Copy the block you need.</p>
+
+      <div class="code-block" data-copy-block style="margin-top:1rem">
         <div class="code-toolbar">
-          <span class="label">bash</span>
+          <span class="label">bash · all agents (recommended first)</span>
           <button type="button" class="copy-btn" data-copy aria-label="Copy install commands">
             <span data-copy-label>Copy</span>
           </button>
         </div>
         <pre class="code" data-copy-source><span class="cmd">git clone</span> <span class="str">https://github.com/AlbionaHoti/cycle-coded</span> ./cycle-coded
-<span class="cmd">claude plugin marketplace add</span> ./cycle-coded
+<span class="cmd">cd</span> cycle-coded
+<span class="cmd">bash</span> install.sh
+<span class="cmt"># links skill → Claude + Codex (~/.agents/skills, ~/.claude/skills)</span></pre>
+      </div>
+
+      <div class="code-block" data-copy-block style="margin-top:0.85rem">
+        <div class="code-toolbar">
+          <span class="label">bash · Claude Code plugin</span>
+          <button type="button" class="copy-btn" data-copy><span data-copy-label>Copy</span></button>
+        </div>
+        <pre class="code" data-copy-source><span class="cmd">claude plugin marketplace add</span> ./cycle-coded
 <span class="cmd">claude plugin install</span> cycle-coded@cycle-coded
-<span class="cmt"># then: /cycle-coded   or just say "i'm luteal"</span></pre>
+<span class="cmt"># then: /cycle-coded  or  say "i'm luteal"</span></pre>
+      </div>
+
+      <div class="code-block" data-copy-block style="margin-top:0.85rem">
+        <div class="code-toolbar">
+          <span class="label">bash · Codex / ChatGPT Codex</span>
+          <button type="button" class="copy-btn" data-copy><span data-copy-label>Copy</span></button>
+        </div>
+        <pre class="code" data-copy-source><span class="cmd">codex plugin marketplace add</span> AlbionaHoti/cycle-coded --ref main
+<span class="cmd">codex plugin add</span> cycle-coded@cycle-coded
+<span class="cmt"># or: npx skills add AlbionaHoti/cycle-coded --skill cycle-coded</span></pre>
+      </div>
+
+      <div class="code-block" data-copy-block style="margin-top:0.85rem">
+        <div class="code-toolbar">
+          <span class="label">bash · your real phase (local only)</span>
+          <button type="button" class="copy-btn" data-copy><span data-copy-label>Copy</span></button>
+        </div>
+        <pre class="code" data-copy-source><span class="cmd">node</span> mcp/import-health.mjs path/to/export.xml
+<span class="cmd">node</span> mcp/server.mjs get
+<span class="cmd">node</span> scripts/test-local.mjs
+<span class="cmt"># paste only the header line into ChatGPT / Gemini / Grok</span></pre>
+      </div>
+
+      <div class="code-block" data-copy-block style="margin-top:0.85rem">
+        <div class="code-toolbar">
+          <span class="label">text · ChatGPT / Gemini / Grok custom instructions</span>
+          <button type="button" class="copy-btn" data-copy><span data-copy-label>Copy</span></button>
+        </div>
+        <pre class="code" data-copy-source>Open instructions/UNIVERSAL.md in the repo and paste it into Custom instructions
+(or a ChatGPT Project / Gemini Gem / Grok custom prompt).
+
+Then paste your live header from: node mcp/server.mjs get
+Example: follicular · day 12 · building
+
+Say: use cycle-coded — answer in my mode.</pre>
       </div>
     </section>
 
