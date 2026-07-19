@@ -206,7 +206,7 @@ export function CinematicHero() {
             className="text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] leading-[1.1] max-w-4xl mb-5 sm:mb-6 transition-colors duration-700"
             style={{ fontFamily: "'Instrument Serif', serif", color: ink }}
           >
-            Claude that knows
+            Agents that know
             <br />
             what day it is
           </h1>
