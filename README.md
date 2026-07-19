@@ -12,7 +12,7 @@
   <a href="GLOSSARY.md">Glossary</a> ·
   <a href="INSTALL.md">Install</a> ·
   <a href="PRIVACY.md">Privacy</a> ·
-  <a href="landing/index.html">Landing</a>
+  <a href="web/">Site (Vite)</a>
 </p>
 
 ---
