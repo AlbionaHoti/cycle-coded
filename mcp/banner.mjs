@@ -1,30 +1,22 @@
 /**
- * Terminal presentation for cycle-coded CLI.
- *
- * Visual language inspired by classic density-mapped moon ASCII
- * (e.g. public moon-phase CLI art traditions — original plates below,
- * not copied from any repo) and clean product CLIs (figlet wordmarks,
- * boxed status panels).
- *
- * Art is original for cycle-coded. No third-party art files vendored.
- * Human-facing only — keep machine JSON on stdout when not a TTY.
+ * Terminal presentation for cycle-coded CLI — cute pink edition.
+ * Density moons + soft palette. Original art. Local only.
  */
 
 const RESET = "\x1b[0m";
 const BOLD = "\x1b[1m";
 const DIM = "\x1b[2m";
 
-// Soft product palette (256-color; falls back clean with NO_COLOR)
+// Cute pink stack (256-color)
+const BLUSH = "\x1b[38;5;225m"; // almost white-pink
 const PINK = "\x1b[38;5;218m";
-const ROSE = "\x1b[38;5;204m";
-const PLUM = "\x1b[38;5;176m";
-const INK = "\x1b[38;5;255m";
-const MUTED = "\x1b[38;5;245m";
-const SLATE = "\x1b[38;5;240m";
-const GOLD = "\x1b[38;5;222m";
-const MINT = "\x1b[38;5;151m";
-const STEEL = "\x1b[38;5;110m";
-const ASH = "\x1b[38;5;250m";
+const ROSE = "\x1b[38;5;211m";
+const HOT = "\x1b[38;5;205m";
+const BERRY = "\x1b[38;5;198m";
+const LILAC = "\x1b[38;5;183m";
+const CREAM = "\x1b[38;5;255m";
+const MUTED = "\x1b[38;5;250m";
+const SOFT = "\x1b[38;5;247m";
 
 function colorEnabled() {
   return (
@@ -48,9 +40,14 @@ function padVisible(s, width) {
   return s + " ".repeat(Math.max(0, width - n));
 }
 
-/** Compact professional wordmark (not cartoon) */
+/** Pink gradient across logo lines */
+function gradientLine(line, i, total) {
+  const shades = [BLUSH, PINK, ROSE, HOT, BERRY, HOT];
+  const code = shades[Math.min(i, shades.length - 1)];
+  return c(code, line);
+}
+
 export function wordmark() {
-  // Big mark is CYCLE only — "coded" lives in the package name, not the banner.
   const logo = [
     " ██████╗██╗   ██╗ ██████╗██╗     ███████╗",
     "██╔════╝╚██╗ ██╔╝██╔════╝██║     ██╔════╝",
@@ -60,89 +57,94 @@ export function wordmark() {
     " ╚═════╝   ╚═╝    ╚═════╝╚══════╝╚══════╝",
   ];
   return [
-    ...logo.map((l) => c(ROSE, l)),
-    c(SLATE, "  agent modes  ·  local only"),
+    c(PINK, "  ˚₊· ͟͟͞͞➳❥  cute modes for agents"),
+    ...logo.map((l, i) => gradientLine(l, i, logo.length)),
+    c(LILAC, "  ✦ local only") + c(SOFT, "  ·  no cloud  ·  ") + c(PINK, "♡"),
   ].join("\n");
 }
 
 /**
- * Density moons — classic @#%:·. plate language.
- * Mapped to cycle energy, not lunar calendar claims.
+ * Soft pink density moons — still readable as phases, cuter colors.
  */
 const PLATES = {
-  // menstrual — dark / bare minimum
   menstrual: {
-    color: ASH,
-    label: "BARE MINIMUM",
+    color: MUTED,
+    accent: PINK,
+    label: "♡ bare minimum",
+    sparkle: "  · soft day · rest ok ·",
     art: [
-      "            .·····.        ",
-      "         .··········.      ",
-      "       .··············.    ",
-      "      ··················   ",
-      "      ··················   ",
-      "       ················    ",
-      "         ············      ",
-      "            ······         ",
+      "         ✦    .·····.     ✦  ",
+      "            .··········.     ",
+      "          .··············.   ",
+      "         ··················  ",
+      "         ··················  ",
+      "          ················   ",
+      "            ············     ",
+      "         ˚    ······     ˚   ",
     ],
   },
-  // follicular — waxing light / building
   follicular: {
-    color: MINT,
-    label: "BUILDING",
+    color: PINK,
+    accent: HOT,
+    label: "♡ building",
+    sparkle: "  · rising · say yes ·",
     art: [
-      "            .····#@        ",
-      "         .·······###@      ",
-      "       .·········####@     ",
-      "      ···········#####@    ",
-      "      ···········#####@    ",
-      "       ··········####@     ",
-      "         ········###@      ",
-      "            ·····#@        ",
+      "         ˚    .····#@    ✦   ",
+      "            .·······###@     ",
+      "          .·········####@    ",
+      "         ···········#####@   ",
+      "         ···········#####@   ",
+      "          ··········####@    ",
+      "            ········###@     ",
+      "         ✦    ·····#@    ˚   ",
     ],
   },
-  // ovulatory — full / post it
   ovulatory: {
-    color: GOLD,
-    label: "POST IT",
+    color: HOT,
+    accent: BERRY,
+    label: "♡ post it",
+    sparkle: "  · main character · shiny ·",
     art: [
-      "            @@@@@@@@       ",
-      "         @@@@@@@@@@@@@@    ",
-      "       @@@@@@@@@@@@@@@@@@  ",
-      "      @@@@@@@@@@@@@@@@@@@@ ",
-      "      @@@@@@@@@@@@@@@@@@@@ ",
-      "       @@@@@@@@@@@@@@@@@@  ",
-      "         @@@@@@@@@@@@@@    ",
-      "            @@@@@@@@       ",
+      "         ✦    @@@@@@@@   ✦   ",
+      "            @@@@@@@@@@@@@@   ",
+      "          @@@@@@@@@@@@@@@@@@ ",
+      "         @@@@@@@@@@@@@@@@@@@@",
+      "         @@@@@@@@@@@@@@@@@@@@",
+      "          @@@@@@@@@@@@@@@@@@ ",
+      "            @@@@@@@@@@@@@@   ",
+      "         ˚    @@@@@@@@   ˚   ",
     ],
   },
-  // luteal — waning hard light / ruthless
   luteal: {
-    color: STEEL,
-    label: "RUTHLESS",
+    color: LILAC,
+    accent: ROSE,
+    label: "♡ ruthless",
+    sparkle: "  · cut the fluff · no yap ·",
     art: [
-      "            @@#···.        ",
-      "         @@@##······.      ",
-      "       @@@@##········.     ",
-      "      @@@@@##·········.    ",
-      "      @@@@@##·········.    ",
-      "       @@@@##········.     ",
-      "         @@@##······.      ",
-      "            @@#···.        ",
+      "         ·    @@#···.    ✦   ",
+      "            @@@##······.     ",
+      "          @@@@##········.    ",
+      "         @@@@@##·········.   ",
+      "         @@@@@##·········.   ",
+      "          @@@@##········.    ",
+      "            @@@##······.     ",
+      "         ✦    @@#···.    ·   ",
     ],
   },
-  // default / import / unknown
   default: {
-    color: PLUM,
-    label: "CYCLE",
+    color: ROSE,
+    accent: PINK,
+    label: "♡ cycle",
+    sparkle: "  · you decide the vibe ·",
     art: [
-      "            ··##@@··       ",
-      "         ··###@@@@###·     ",
-      "       ·###@@@@@@@@###·    ",
-      "      ·##@@@@@@@@@@@@##·   ",
-      "      ·##@@@@@@@@@@@@##·   ",
-      "       ·###@@@@@@@@###·    ",
-      "         ··###@@@@###·     ",
-      "            ··##@@··       ",
+      "         ˚    ··##@@··   ✦   ",
+      "            ··###@@@@###·    ",
+      "          ·###@@@@@@@@###·   ",
+      "         ·##@@@@@@@@@@@@##·  ",
+      "         ·##@@@@@@@@@@@@##·  ",
+      "          ·###@@@@@@@@###·   ",
+      "            ··###@@@@###·    ",
+      "         ✦    ··##@@··   ˚   ",
     ],
   },
 };
@@ -150,48 +152,41 @@ const PLATES = {
 export function phaseArt(phase) {
   const plate = PLATES[phase] || PLATES.default;
   const lines = plate.art.map((l) => c(plate.color, l));
-  const tag = c(DIM + MUTED, `  ${plate.label}`);
-  return lines.join("\n") + "\n" + tag;
+  return (
+    lines.join("\n") +
+    "\n" +
+    c(BOLD + plate.accent, `  ${plate.label}`) +
+    "\n" +
+    c(SOFT, plate.sparkle)
+  );
 }
 
-/** Day-in-cycle progress (editorial, not medical) */
-export function progressBar(day, total, width = 22) {
+/** Cute pink progress heart-bar */
+export function progressBar(day, total, width = 20) {
   if (!day || !total || total < 1) {
-    return c(SLATE, "[" + "·".repeat(width) + "]");
+    return c(SOFT, "♡ " + "·".repeat(width));
   }
   const d = Math.max(1, Math.min(total, Number(day)));
   const filled = Math.round((d / total) * width);
   const bar =
-    "█".repeat(Math.max(0, filled)) + "░".repeat(Math.max(0, width - filled));
+    "♥".repeat(Math.max(0, filled)) + "♡".repeat(Math.max(0, width - filled));
   return (
-    c(ROSE, "[") +
-    c(PINK, bar.slice(0, filled)) +
-    c(SLATE, bar.slice(filled)) +
-    c(ROSE, "]") +
-    c(MUTED, `  ${d}/${total}`)
+    c(HOT, bar.slice(0, filled)) +
+    c(PINK, bar.slice(filled)) +
+    c(SOFT, `  day ${d}/${total}`)
   );
 }
 
 export function box(rows) {
   const width = Math.max(...rows.map((l) => stripAnsi(l).length), 36);
-  const top = c(SLATE, "╭" + "─".repeat(width + 2) + "╮");
-  const bot = c(SLATE, "╰" + "─".repeat(width + 2) + "╯");
+  const top = c(PINK, "╭" + "─".repeat(width + 2) + "╮");
+  const bot = c(PINK, "╰" + "─".repeat(width + 2) + "╯");
   const mid = rows.map((l) => {
-    return (
-      c(SLATE, "│") +
-      " " +
-      padVisible(l, width) +
-      " " +
-      c(SLATE, "│")
-    );
+    return c(PINK, "│") + " " + padVisible(l, width) + " " + c(PINK, "│");
   });
   return [top, ...mid, bot].join("\n");
 }
 
-/**
- * Pretty status for get / set.
- * stderr so stdout can stay pipe-friendly.
- */
 export function printStatus({ header, cycle, modes, statePath, extraLines = [] }) {
   const out = process.stderr;
   out.write("\n");
@@ -200,33 +195,33 @@ export function printStatus({ header, cycle, modes, statePath, extraLines = [] }
 
   const lines = [];
   if (header) {
-    lines.push(c(BOLD + INK, header));
+    lines.push(c(BOLD + CREAM, header) + " " + c(HOT, "♡"));
   }
   if (cycle?.configured) {
-    lines.push(
-      progressBar(cycle.dayInCycle, cycle.cycleLength) +
-        c(MUTED, `  ·  ${cycle.confidence || "—"}`)
-    );
+    lines.push(progressBar(cycle.dayInCycle, cycle.cycleLength));
     if (cycle.lastPeriodStart) {
-      lines.push(c(MUTED, `anchor   ${cycle.lastPeriodStart}`));
+      lines.push(c(SOFT, `anchor   ${cycle.lastPeriodStart}`));
     }
     if (cycle.energy) {
-      lines.push(c(MUTED, `energy   ${cycle.energy}`));
+      lines.push(c(SOFT, `vibe     ${cycle.energy}`));
     }
   } else {
-    lines.push(c(MUTED, "no anchor set — import Health or: set YYYY-MM-DD"));
+    lines.push(c(SOFT, "no anchor yet — import Health or set YYYY-MM-DD ♡"));
   }
 
   const modeKeys = Object.keys(modes || {}).filter((k) => modes[k]);
   if (modeKeys.length) {
-    lines.push(c(PLUM, "modes    " + modeKeys.join(" · ")));
+    lines.push(c(LILAC, "modes    " + modeKeys.map((m) => `♡ ${m}`).join("  ")));
   }
-  for (const e of extraLines) lines.push(c(MUTED, e));
-  if (statePath) lines.push(c(DIM + SLATE, statePath));
+  for (const e of extraLines) lines.push(c(SOFT, e));
+  if (statePath) lines.push(c(DIM + SOFT, statePath));
 
   out.write(box(lines) + "\n");
   out.write(
-    c(DIM + MUTED, "  not medical advice  ·  data never leaves this machine") +
+    c(PINK, "  ♡ ") +
+      c(SOFT, "not medical advice") +
+      c(PINK, "  ·  ") +
+      c(SOFT, "stays on your machine") +
       "\n\n"
   );
 }
@@ -238,13 +233,13 @@ export function printImportDone({ periodCount, lastStart, avg, statePath }) {
   out.write(phaseArt("default") + "\n\n");
   out.write(
     box([
-      c(BOLD + INK, "import complete"),
-      c(MUTED, `${periodCount} cycles read  ·  avg length ${avg}d`),
-      c(MUTED, `latest anchor   ${lastStart}`),
-      c(DIM + SLATE, statePath || ""),
+      c(BOLD + CREAM, "import complete ♡"),
+      c(SOFT, `${periodCount} cycles  ·  avg ${avg}d`),
+      c(SOFT, `latest   ${lastStart}`),
+      c(DIM + SOFT, statePath || ""),
     ]) + "\n"
   );
-  out.write(c(DIM + MUTED, "  local only  ·  not medical advice") + "\n");
+  out.write(c(PINK, "  ♡ local only · cute and private") + "\n");
 }
 
 export function printCleared() {
@@ -253,8 +248,8 @@ export function printCleared() {
   out.write(wordmark() + "\n\n");
   out.write(
     box([
-      c(BOLD + INK, "state cleared"),
-      c(MUTED, "re-import Health or: set YYYY-MM-DD"),
+      c(BOLD + CREAM, "wiped clean ♡"),
+      c(SOFT, "import again or: set YYYY-MM-DD"),
     ]) + "\n\n"
   );
 }
@@ -263,16 +258,13 @@ export function printHelp() {
   const out = process.stdout.isTTY ? process.stdout : process.stderr;
   out.write("\n");
   out.write(wordmark() + "\n\n");
-  out.write(c(BOLD + INK, "  commands") + "\n");
-  out.write(c(MUTED, "    get                 show mode + art") + "\n");
-  out.write(c(MUTED, "    set YYYY-MM-DD [n]  set last period start") + "\n");
-  out.write(c(MUTED, "    clear               wipe local state") + "\n");
-  out.write(c(MUTED, "    banner              art only") + "\n");
-  out.write(c(MUTED, "    help") + "\n\n");
-  out.write(c(BOLD + INK, "  import") + "\n");
-  out.write(c(MUTED, "    node import-health.mjs path/to/export.xml") + "\n");
-  out.write(c(MUTED, "    node import-health.mjs --csv periods.csv") + "\n\n");
-  out.write(
-    c(SLATE, "  TTY → art  ·  pipe/JSON → CYCLE_CODED_JSON=1") + "\n\n"
-  );
+  out.write(c(HOT, "  ♡ commands") + "\n");
+  out.write(c(SOFT, "    get                 pretty status") + "\n");
+  out.write(c(SOFT, "    set YYYY-MM-DD [n]  set last start") + "\n");
+  out.write(c(SOFT, "    clear               wipe local state") + "\n");
+  out.write(c(SOFT, "    banner              art only") + "\n");
+  out.write(c(SOFT, "    help") + "\n\n");
+  out.write(c(HOT, "  ♡ import") + "\n");
+  out.write(c(SOFT, "    node import-health.mjs path/to/export.xml") + "\n\n");
+  out.write(c(PINK, "  TTY → pink art  ·  CYCLE_CODED_JSON=1 → raw json") + "\n\n");
 }

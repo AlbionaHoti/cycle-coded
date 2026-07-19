@@ -10,22 +10,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --ink: #1a1218;
-      --blush: #f3d6e0;
-      --rose: #e8a0bf;
-      --hot: #c45c84;
-      --cream: #fbf7f4;
-      --glass: rgba(255, 255, 255, 0.55);
-      --line: rgba(26, 18, 24, 0.1);
-      --muted: rgba(26, 18, 24, 0.55);
+      --ink: #3d1f2e;
+      --blush: #ffd6e8;
+      --rose: #ff9ec8;
+      --hot: #ff4d9a;
+      --bubble: #ffb3d4;
+      --cream: #fff5f9;
+      --glass: rgba(255, 255, 255, 0.72);
+      --line: rgba(255, 77, 154, 0.18);
+      --muted: rgba(61, 31, 46, 0.58);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: "Outfit", system-ui, sans-serif;
       background:
-        radial-gradient(1200px 600px at 10% -10%, #f8c8d8 0%, transparent 55%),
-        radial-gradient(900px 500px at 100% 0%, #e8d5f2 0%, transparent 50%),
-        var(--cream);
+        radial-gradient(900px 520px at 8% -5%, #ffc2dc 0%, transparent 55%),
+        radial-gradient(800px 480px at 95% 5%, #ffd0f0 0%, transparent 50%),
+        radial-gradient(600px 400px at 50% 100%, #ffe0f0 0%, transparent 45%),
+        linear-gradient(180deg, #fff0f6 0%, var(--cream) 40%, #ffe8f2 100%);
       color: var(--ink);
       min-height: 100vh;
       line-height: 1.5;
@@ -41,10 +43,12 @@
       font-family: "IBM Plex Mono", monospace;
       font-weight: 500;
       letter-spacing: -0.02em;
+      color: var(--hot);
     }
+    nav .brand::before { content: "♡ "; }
     nav .links { display: flex; gap: 1.25rem; color: var(--muted); }
     nav .links a { color: var(--muted); }
-    nav .links a:hover { color: var(--ink); }
+    nav .links a:hover { color: var(--hot); }
 
     .hero h1 {
       font-family: "Instrument Serif", Georgia, serif;
@@ -64,26 +68,29 @@
     .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem; }
     .btn {
       display: inline-flex; align-items: center; gap: 0.4rem;
-      padding: 0.7rem 1.1rem;
+      padding: 0.75rem 1.2rem;
       border-radius: 999px;
       font-size: 0.95rem;
       font-weight: 500;
       border: 1px solid transparent;
       cursor: pointer;
       text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
+    .btn:hover { transform: translateY(-1px); }
     .btn-primary {
-      background: var(--ink);
-      color: var(--cream);
+      background: linear-gradient(135deg, #ff6b9d 0%, #ff4d9a 50%, #ff7eb3 100%);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(255, 77, 154, 0.35);
     }
-    .btn-primary:hover { background: #2e2229; text-decoration: none; color: var(--cream); }
+    .btn-primary:hover { text-decoration: none; color: #fff; box-shadow: 0 12px 28px rgba(255, 77, 154, 0.45); }
     .btn-ghost {
-      background: var(--glass);
+      background: rgba(255, 255, 255, 0.75);
       border-color: var(--line);
       color: var(--ink);
       backdrop-filter: blur(12px);
     }
-    .btn-ghost:hover { text-decoration: none; border-color: var(--rose); }
+    .btn-ghost:hover { text-decoration: none; border-color: var(--rose); background: #fff; }
     .fine {
       font-family: "IBM Plex Mono", monospace;
       font-size: 0.75rem;
@@ -95,10 +102,12 @@
       margin-top: 2.5rem;
       background: var(--glass);
       border: 1px solid var(--line);
-      border-radius: 1.25rem;
+      border-radius: 1.5rem;
       padding: 1.25rem;
       backdrop-filter: blur(16px);
-      box-shadow: 0 20px 50px rgba(196, 92, 132, 0.08);
+      box-shadow:
+        0 20px 50px rgba(255, 77, 154, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
     }
     .tabs {
       display: flex; flex-wrap: wrap; gap: 0.4rem;
@@ -107,17 +116,18 @@
     .tab {
       font-family: "IBM Plex Mono", monospace;
       font-size: 0.72rem;
-      padding: 0.4rem 0.7rem;
+      padding: 0.45rem 0.8rem;
       border-radius: 999px;
       border: 1px solid var(--line);
-      background: transparent;
+      background: rgba(255, 255, 255, 0.5);
       cursor: pointer;
       color: var(--muted);
     }
     .tab.active {
-      background: var(--ink);
-      color: var(--cream);
-      border-color: var(--ink);
+      background: linear-gradient(135deg, #ff8fb8, #ff4d9a);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(255, 77, 154, 0.3);
     }
     .panel {
       display: none;
@@ -125,8 +135,8 @@
       font-size: 0.82rem;
       line-height: 1.55;
       white-space: pre-wrap;
-      background: rgba(255,255,255,0.65);
-      border-radius: 0.85rem;
+      background: linear-gradient(180deg, #fff 0%, #fff5fa 100%);
+      border-radius: 1rem;
       padding: 1rem 1.1rem;
       border: 1px solid var(--line);
     }
@@ -150,29 +160,33 @@
     }
     .card {
       border: 1px solid var(--line);
-      border-radius: 1rem;
+      border-radius: 1.15rem;
       padding: 1rem;
-      background: rgba(255,255,255,0.45);
+      background: linear-gradient(160deg, #fff 0%, #fff0f6 100%);
+      box-shadow: 0 8px 20px rgba(255, 77, 154, 0.06);
     }
     .card strong {
       display: block;
       font-family: "IBM Plex Mono", monospace;
       font-size: 0.8rem;
       margin-bottom: 0.35rem;
+      color: var(--hot);
     }
+    .card strong::before { content: "♡ "; font-weight: 400; }
     .card span { font-size: 0.88rem; color: var(--muted); }
 
     .code {
       font-family: "IBM Plex Mono", monospace;
       font-size: 0.8rem;
-      background: var(--ink);
-      color: #f5e6ec;
+      background: linear-gradient(160deg, #3d1f2e 0%, #5c2a42 100%);
+      color: #ffe0ee;
       padding: 1rem 1.1rem;
-      border-radius: 0.9rem;
+      border-radius: 1rem;
       overflow-x: auto;
       margin-top: 0.75rem;
+      border: 1px solid rgba(255, 158, 200, 0.25);
     }
-    .code span.cmd { color: var(--rose); }
+    .code span.cmd { color: #ff9ec8; }
 
     footer {
       margin-top: 4rem;
@@ -196,17 +210,17 @@
     </nav>
 
     <header class="hero">
-      <h1>Claude that knows<br /><em>what day it is.</em></h1>
+      <h1>Claude that knows<br /><em>what day it is.</em> ♡</h1>
       <p class="sub">
-        Girl-internet operating language for agents. Cycle, chart, and era modes —
-        glossary-first, local-first, bold. Not a wellness app. Not medical advice.
+        Cute modes for cracked agents. Cycle, chart, and era language —
+        glossary-first, pink, local-only. Not a wellness app. Not medical advice.
       </p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="https://github.com/AlbionaHoti/cycle-coded">star on github</a>
+        <a class="btn btn-primary" href="https://github.com/AlbionaHoti/cycle-coded">♡ star on github</a>
         <a class="btn btn-ghost" href="https://github.com/AlbionaHoti/cycle-coded/blob/main/INSTALL.md">install</a>
-        <a class="btn btn-ghost" href="https://github.com/AlbionaHoti/cycle-coded/blob/main/GLOSSARY.md">read the glossary</a>
+        <a class="btn btn-ghost" href="https://github.com/AlbionaHoti/cycle-coded/blob/main/GLOSSARY.md">glossary</a>
       </div>
-      <p class="fine">for cracked girls running claude · eras work without any body data</p>
+      <p class="fine">♡ for cracked girls running claude · eras work without body data</p>
     </header>
 
     <div class="glass">
