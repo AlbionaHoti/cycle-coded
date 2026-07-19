@@ -9,46 +9,12 @@ import { ArrowUpRight, Heart } from 'lucide-react'
 import { StaggeredFade } from './components/StaggeredFade'
 import { Reveal } from './components/Reveal'
 import { CopyBlock } from './components/CopyBlock'
+import { ScrollWorld } from './components/ScrollWorld'
 
 const NAV = [
   { label: 'THE JOKE', href: '#joke' },
-  { label: 'PHASES', href: '#phases' },
+  { label: 'FLY THE CYCLE', href: '#world' },
   { label: 'INSTALL', href: '#install' },
-]
-
-const PHASES = [
-  {
-    id: 'menstrual',
-    tag: 'day 1–5',
-    title: 'bare minimum',
-    line: 'One action. Permission to stop. Laptop optional.',
-    header: 'menstrual · day 2 · bare minimum',
-    vibe: 'soft power-save',
-  },
-  {
-    id: 'follicular',
-    tag: 'day 6–13',
-    title: 'building',
-    line: 'Say yes to the fun version. Kill criteria required.',
-    header: 'follicular · day 12 · building',
-    vibe: 'green lights',
-  },
-  {
-    id: 'ovulatory',
-    tag: 'day 14–16',
-    title: 'post it',
-    line: 'Walkthrough mode. Screenshot first. Share line last.',
-    header: 'ovulatory · day 14 · post it',
-    vibe: 'main character',
-  },
-  {
-    id: 'luteal',
-    tag: 'day 17–28',
-    title: 'ruthless',
-    line: "Don't redesign. Ship the 40-line fix. Find the hole.",
-    header: 'luteal · day 23 · ruthless',
-    vibe: 'mean bestie',
-  },
 ]
 
 const JOKES = [
@@ -319,45 +285,24 @@ export default function App() {
         </Reveal>
       </section>
 
-      {/* PHASES */}
-      <section id="phases" className="relative z-10 px-4 sm:px-6 md:px-10 lg:px-14 py-24 md:py-32">
+      {/* SCROLL WORLD — fly through the cycle (scroll-world pattern) */}
+      <div className="relative z-10 px-4 sm:px-6 md:px-10 lg:px-14 pt-8 pb-4">
         <Reveal>
-          <p className="font-mono text-[11px] tracking-brand uppercase text-hot mb-4">
-            four moods. one agent.
+          <p className="font-mono text-[11px] tracking-brand uppercase text-hot mb-3">
+            fly the cycle
           </p>
-          <h2 className="hero-heading text-4xl sm:text-5xl md:text-6xl text-ink mb-4">
-            Pick a phase. Change the answer.
+          <h2 className="hero-heading text-3xl sm:text-4xl md:text-5xl text-ink max-w-2xl mb-2">
+            Scroll = time. Four rooms. No cuts.
           </h2>
-          <p className="text-ink/55 max-w-lg mb-14">
-            Same coding question. Four correct answers. That&apos;s the meme — and the product.
+          <p className="text-ink/50 text-sm max-w-lg mb-6">
+            Same scrub idea as continuous scroll-world flights — here the world is your phases.
           </p>
         </Reveal>
+      </div>
+      <ScrollWorld />
 
-        <div className="grid sm:grid-cols-2 gap-5">
-          {PHASES.map((p, i) => (
-            <Reveal key={p.id} delay={i * 0.08}>
-              <article className="group relative overflow-hidden rounded-3xl border border-hot/10 bg-gradient-to-br from-white to-blush/40 p-7 md:p-9 hover:border-hot/30 transition-colors duration-300">
-                <div className="flex items-center justify-between mb-6">
-                  <span className="font-mono text-[10px] tracking-brand uppercase text-hot">
-                    {p.tag}
-                  </span>
-                  <span className="font-mono text-[10px] tracking-wide uppercase text-ink/40">
-                    {p.vibe}
-                  </span>
-                </div>
-                <h3 className="hero-heading text-4xl md:text-5xl text-ink mb-3 group-hover:text-hot transition-colors">
-                  {p.title}
-                </h3>
-                <p className="text-ink/60 mb-6 leading-relaxed">{p.line}</p>
-                <code className="inline-block font-mono text-xs text-berry bg-hot/10 rounded-full px-3 py-1.5">
-                  {p.header}
-                </code>
-              </article>
-            </Reveal>
-          ))}
-        </div>
-
-        <Reveal className="mt-10 flex flex-wrap gap-3">
+      <section className="relative z-10 px-4 sm:px-6 md:px-10 lg:px-14 py-16">
+        <Reveal className="flex flex-wrap gap-3 justify-center">
           {['mercury retrograde', 'building era', 'villain era', 'girl math', 'walkthrough'].map(
             (t) => (
               <span
