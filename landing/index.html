@@ -175,18 +175,68 @@
     .card strong::before { content: "♡ "; font-weight: 400; }
     .card span { font-size: 0.88rem; color: var(--muted); }
 
+    .code-block {
+      margin-top: 0.85rem;
+      border-radius: 1rem;
+      overflow: hidden;
+      border: 1px solid rgba(255, 158, 200, 0.28);
+      background: linear-gradient(160deg, #3d1f2e 0%, #5c2a42 100%);
+      box-shadow: 0 12px 32px rgba(255, 77, 154, 0.12);
+    }
+    .code-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.55rem 0.85rem;
+      background: rgba(0, 0, 0, 0.22);
+      border-bottom: 1px solid rgba(255, 158, 200, 0.15);
+    }
+    .code-toolbar .label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      color: #ffb3d4;
+      letter-spacing: 0.02em;
+    }
+    .copy-btn {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 158, 200, 0.35);
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffe0ee;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .copy-btn:hover {
+      background: rgba(255, 77, 154, 0.25);
+      border-color: #ff9ec8;
+      color: #fff;
+    }
+    .copy-btn.copied {
+      background: rgba(255, 77, 154, 0.35);
+      border-color: #ff9ec8;
+      color: #fff;
+    }
     .code {
       font-family: "IBM Plex Mono", monospace;
       font-size: 0.8rem;
-      background: linear-gradient(160deg, #3d1f2e 0%, #5c2a42 100%);
       color: #ffe0ee;
-      padding: 1rem 1.1rem;
-      border-radius: 1rem;
+      padding: 1rem 1.1rem 1.15rem;
       overflow-x: auto;
-      margin-top: 0.75rem;
-      border: 1px solid rgba(255, 158, 200, 0.25);
+      margin: 0;
+      line-height: 1.65;
+      white-space: pre;
+      tab-size: 2;
     }
-    .code span.cmd { color: #ff9ec8; }
+    .code .cmd { color: #ff9ec8; }
+    .code .cmt { color: rgba(255, 224, 238, 0.45); }
+    .code .str { color: #ffd0e8; }
 
     footer {
       margin-top: 4rem;
@@ -284,11 +334,18 @@ Next: implement record → blob. Skip auth until the slice works.</div>
 
     <section>
       <h2>install in one breath</h2>
-      <div class="code">
-<span class="cmd">git clone</span> https://github.com/AlbionaHoti/cycle-coded ./cycle-coded
+      <p>Clone, add the marketplace, install the plugin. Then <code>/cycle-coded</code> or just say <em>i'm luteal</em>.</p>
+      <div class="code-block" data-copy-block>
+        <div class="code-toolbar">
+          <span class="label">bash</span>
+          <button type="button" class="copy-btn" data-copy aria-label="Copy install commands">
+            <span data-copy-label>Copy</span>
+          </button>
+        </div>
+        <pre class="code" data-copy-source><span class="cmd">git clone</span> <span class="str">https://github.com/AlbionaHoti/cycle-coded</span> ./cycle-coded
 <span class="cmd">claude plugin marketplace add</span> ./cycle-coded
 <span class="cmd">claude plugin install</span> cycle-coded@cycle-coded
-# then: /cycle-coded   or just say "i'm luteal"
+<span class="cmt"># then: /cycle-coded   or just say "i'm luteal"</span></pre>
       </div>
     </section>
 
@@ -326,6 +383,36 @@ Next: implement record → blob. Skip auth until the slice works.</div>
         t.classList.add("active");
         Object.values(panels).forEach((p) => p.classList.remove("active"));
         panels[t.dataset.p].classList.add("active");
+      });
+    });
+
+    // Dev-docs style copy buttons
+    document.querySelectorAll("[data-copy-block]").forEach((block) => {
+      const btn = block.querySelector("[data-copy]");
+      const source = block.querySelector("[data-copy-source]");
+      const label = block.querySelector("[data-copy-label]");
+      if (!btn || !source) return;
+
+      btn.addEventListener("click", async () => {
+        const text = source.innerText.replace(/\n$/, "");
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+        }
+        btn.classList.add("copied");
+        if (label) label.textContent = "Copied!";
+        setTimeout(() => {
+          btn.classList.remove("copied");
+          if (label) label.textContent = "Copy";
+        }, 1600);
       });
     });
   </script>
