@@ -194,10 +194,10 @@ export function CinematicHero() {
         {/* Hero center */}
         <div className="flex-1 flex flex-col items-center justify-center text-center pt-6 pb-4">
           <div
-            className="liquid-glass-hero rounded-full px-4 py-1.5 mb-6 sm:mb-8 transition-colors duration-700"
+            className="liquid-glass-hero rounded-full px-5 sm:px-6 py-2 sm:py-2.5 mb-6 sm:mb-8 transition-colors duration-700"
             style={{ color: ink, fontFamily: 'system-ui, sans-serif' }}
           >
-            <span className="text-xs sm:text-sm opacity-90">
+            <span className="text-sm sm:text-base md:text-lg font-medium tracking-wide opacity-95">
               Agents that finally speak phase — local only ♡
             </span>
           </div>
