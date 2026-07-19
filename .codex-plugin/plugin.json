@@ -1,0 +1,40 @@
+{
+  "name": "cycle-coded",
+  "version": "0.1.0",
+  "description": "Girl-internet operating language for agents: cycle phases, astrology events, and era modes that reshape output.",
+  "author": {
+    "name": "cycle-coded",
+    "url": "https://github.com/AlbionaHoti/cycle-coded"
+  },
+  "homepage": "https://github.com/AlbionaHoti/cycle-coded",
+  "repository": "https://github.com/AlbionaHoti/cycle-coded",
+  "license": "MIT",
+  "keywords": [
+    "cycle",
+    "astrology",
+    "output-style",
+    "girl-internet",
+    "skills",
+    "codex",
+    "modes"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "cycle-coded",
+    "shortDescription": "Claude that knows what day it is",
+    "longDescription": "Shape agent responses using girl-internet language: menstrual cycle phases, astrology events, and eras (building, villain, soft life). Glossary-first. Local-first. Not medical advice.",
+    "developerName": "cycle-coded",
+    "category": "Productivity",
+    "capabilities": [
+      "Instructions"
+    ],
+    "websiteURL": "https://github.com/AlbionaHoti/cycle-coded",
+    "defaultPrompt": [
+      "Use cycle-coded for this task.",
+      "I'm luteal — ruthless mode.",
+      "Apply follicular building-era output.",
+      "Mercury retrograde — no reckless deploys."
+    ],
+    "brandColor": "#E8A0BF"
+  }
+}

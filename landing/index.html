@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>cycle-coded — Claude that knows what day it is</title>
+  <meta name="description" content="Girl-internet operating language for agents. Cycle, chart, and era modes. Glossary-first. Local-first. Not medical advice." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1218;
+      --blush: #f3d6e0;
+      --rose: #e8a0bf;
+      --hot: #c45c84;
+      --cream: #fbf7f4;
+      --glass: rgba(255, 255, 255, 0.55);
+      --line: rgba(26, 18, 24, 0.1);
+      --muted: rgba(26, 18, 24, 0.55);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Outfit", system-ui, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #f8c8d8 0%, transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, #e8d5f2 0%, transparent 50%),
+        var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    a { color: var(--hot); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 3rem; font-size: 0.9rem;
+    }
+    nav .brand {
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+    nav .links { display: flex; gap: 1.25rem; color: var(--muted); }
+    nav .links a { color: var(--muted); }
+    nav .links a:hover { color: var(--ink); }
+
+    .hero h1 {
+      font-family: "Instrument Serif", Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(2.4rem, 7vw, 3.75rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .hero h1 em { font-style: italic; color: var(--hot); }
+    .hero .sub {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 34rem;
+      margin-bottom: 1.75rem;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.7rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--ink);
+      color: var(--cream);
+    }
+    .btn-primary:hover { background: #2e2229; text-decoration: none; color: var(--cream); }
+    .btn-ghost {
+      background: var(--glass);
+      border-color: var(--line);
+      color: var(--ink);
+      backdrop-filter: blur(12px);
+    }
+    .btn-ghost:hover { text-decoration: none; border-color: var(--rose); }
+    .fine {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .glass {
+      margin-top: 2.5rem;
+      background: var(--glass);
+      border: 1px solid var(--line);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 50px rgba(196, 92, 132, 0.08);
+    }
+    .tabs {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    .tab {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      padding: 0.4rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: transparent;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .tab.active {
+      background: var(--ink);
+      color: var(--cream);
+      border-color: var(--ink);
+    }
+    .panel {
+      display: none;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      background: rgba(255,255,255,0.65);
+      border-radius: 0.85rem;
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--line);
+    }
+    .panel.active { display: block; }
+    .panel .hdr { color: var(--hot); font-weight: 500; margin-bottom: 0.5rem; display: block; }
+
+    section { margin-top: 3.5rem; }
+    section h2 {
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: 1.85rem;
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+    section p { color: var(--muted); max-width: 38rem; margin-bottom: 1rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.45);
+    }
+    .card strong {
+      display: block;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.8rem;
+      margin-bottom: 0.35rem;
+    }
+    .card span { font-size: 0.88rem; color: var(--muted); }
+
+    .code {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.8rem;
+      background: var(--ink);
+      color: #f5e6ec;
+      padding: 1rem 1.1rem;
+      border-radius: 0.9rem;
+      overflow-x: auto;
+      margin-top: 0.75rem;
+    }
+    .code span.cmd { color: var(--rose); }
+
+    footer {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    footer strong { color: var(--ink); font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <div class="brand">cycle-coded</div>
+      <div class="links">
+        <a href="https://github.com/AlbionaHoti/cycle-coded">github</a>
+        <a href="https://github.com/AlbionaHoti/cycle-coded/blob/main/GLOSSARY.md">glossary</a>
+        <a href="https://github.com/AlbionaHoti/cycle-coded/blob/main/PRIVACY.md">privacy</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <h1>Claude that knows<br /><em>what day it is.</em></h1>
+      <p class="sub">
+        Girl-internet operating language for agents. Cycle, chart, and era modes —
+        glossary-first, local-first, bold. Not a wellness app. Not medical advice.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/AlbionaHoti/cycle-coded">star on github</a>
+        <a class="btn btn-ghost" href="https://github.com/AlbionaHoti/cycle-coded/blob/main/INSTALL.md">install</a>
+        <a class="btn btn-ghost" href="https://github.com/AlbionaHoti/cycle-coded/blob/main/GLOSSARY.md">read the glossary</a>
+      </div>
+      <p class="fine">for cracked girls running claude · eras work without any body data</p>
+    </header>
+
+    <div class="glass">
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-p="luteal">luteal</button>
+        <button class="tab" data-p="ovulatory">ovulatory</button>
+        <button class="tab" data-p="menstrual">menstrual</button>
+        <button class="tab" data-p="mercury">mercury rx</button>
+        <button class="tab" data-p="building">building era</button>
+      </div>
+      <div class="panel active" id="p-luteal"><span class="hdr">luteal · day 23 · ruthless</span>Don't redesign. Fix the null on src/auth.ts:58.
+
+1. Early-return to /login if no session
+2. Run npm test -- auth
+
+Rewrite is ego until three users complain.</div>
+      <div class="panel" id="p-ovulatory"><span class="hdr">ovulatory · day 14 · post it</span>Login feels instant — no "session expired" bounce.
+
+1. Open /login
+2. Sign in once
+3. Wait 10 min → still in
+
+Intentional: silent refresh, no spinner drama.
+Share: fixed the bug that made the app feel broken when it wasn't.</div>
+      <div class="panel" id="p-menstrual"><span class="hdr">menstrual · day 2 · bare minimum</span>Open src/auth.ts and add the missing return on line 58.
+
+1. Fix that one line
+2. Run npm test -- auth once
+
+That's enough for today if you want. Defer the rewrite.</div>
+      <div class="panel" id="p-mercury"><span class="hdr">mercury retrograde · reverse carefully</span>Don't force-push. Don't migrate prod cold.
+
+1. Snapshot DB
+2. Expand-only migration on staging
+3. Deploy dual-read app
+4. Contract later
+
+Next: paste the migration — we'll mark irreversible lines.</div>
+      <div class="panel" id="p-building"><span class="hdr">building era · volume</span>Done = user can record 60s and play it back. Nothing else.
+
+1. Record button
+2. Blob save
+3. Playback
+
+Next: implement record → blob. Skip auth until the slice works.</div>
+    </div>
+
+    <section>
+      <h2>the glossary is the product</h2>
+      <p>
+        Not a random skill zoo. A living lexicon of words girls already use —
+        each one is an output policy. Walkthrough and girl-math are <em>moves</em>, not co-brands.
+      </p>
+      <div class="grid">
+        <div class="card"><strong>cycle</strong><span>menstrual · follicular · ovulatory · luteal · pms</span></div>
+        <div class="card"><strong>astro</strong><span>mercury retrograde · full moon · new moon</span></div>
+        <div class="card"><strong>eras</strong><span>building · villain · soft life · protect peace</span></div>
+        <div class="card"><strong>moves</strong><span>walkthrough · girl math · be so fr</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>install in one breath</h2>
+      <div class="code">
+<span class="cmd">git clone</span> https://github.com/AlbionaHoti/cycle-coded ./cycle-coded
+<span class="cmd">claude plugin marketplace add</span> ./cycle-coded
+<span class="cmd">claude plugin install</span> cycle-coded@cycle-coded
+# then: /cycle-coded   or just say "i'm luteal"
+      </div>
+    </section>
+
+    <section>
+      <h2>runs on your computer</h2>
+      <p>
+        There is <strong>no cycle-coded server</strong> for your health data.
+        Optional MCP stores cycle state only in <code>~/.cycle-coded/</code> on your machine.
+        Import scripts read Apple Health exports locally — they don’t upload.
+        No accounts. No analytics. Clear anytime.
+        (If you paste dates into Claude chat, that follows Anthropic’s policy — cycle-coded doesn’t add a second upload path.)
+      </p>
+      <p style="margin-top:0.75rem">
+        <a href="https://github.com/AlbionaHoti/cycle-coded/blob/main/PRIVACY.md">read the privacy guarantee →</a>
+      </p>
+    </section>
+
+    <footer>
+      <p><strong>cycle-coded</strong> — MIT · not medical advice · not fortune-telling · PR your slang.</p>
+      <p style="margin-top:0.5rem">built for the girls who already had the words.</p>
+    </footer>
+  </div>
+  <script>
+    const tabs = document.querySelectorAll(".tab");
+    const panels = {
+      luteal: document.getElementById("p-luteal"),
+      ovulatory: document.getElementById("p-ovulatory"),
+      menstrual: document.getElementById("p-menstrual"),
+      mercury: document.getElementById("p-mercury"),
+      building: document.getElementById("p-building"),
+    };
+    tabs.forEach((t) => {
+      t.addEventListener("click", () => {
+        tabs.forEach((x) => x.classList.remove("active"));
+        t.classList.add("active");
+        Object.values(panels).forEach((p) => p.classList.remove("active"));
+        panels[t.dataset.p].classList.add("active");
+      });
+    });
+  </script>
+</body>
+</html>

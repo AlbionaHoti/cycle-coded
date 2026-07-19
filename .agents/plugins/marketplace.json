@@ -1,0 +1,11 @@
+{
+  "name": "cycle-coded",
+  "description": "Girl-internet operating language for agents. Cycle + chart + era modes.",
+  "plugins": [
+    {
+      "name": "cycle-coded",
+      "source": "./",
+      "description": "Glossary-first mode skill for Claude-compatible agents"
+    }
+  ]
+}

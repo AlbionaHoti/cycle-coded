@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "cycle-coded",
+  "description": "Claude that speaks cycle, chart, and era language — and obeys it. Glossary-first output modes for cracked girls running agents.",
+  "owner": {
+    "name": "cycle-coded"
+  },
+  "plugins": [
+    {
+      "name": "cycle-coded",
+      "description": "Mode OS: period phases, astro events, girl-internet eras → agent output policy.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
