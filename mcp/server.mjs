@@ -10,6 +10,9 @@
  *   cycle_set_mode    — eras / astro / moves on|off
  *   cycle_clear       — wipe state
  *   cycle_header      — just the mode header string
+ *   cycle_propose_notify — PREVIEW GATE (Router-style). Do not write yet.
+ *   cycle_notify      — after user confirms: log + optional macOS banner
+ *   cycle_notify_list — recent local notifications
  *
  * Not medical advice. Phase is a calendar estimate for output policy only.
  */
@@ -19,6 +22,48 @@ import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { printStatus, printCleared, printHelp } from "./banner.mjs";
+import {
+  appendNotification,
+  fireMacOSNotification,
+  formatPreview,
+  listNotifications,
+  loadNotifyPrefs,
+  saveNotifyPrefs,
+} from "./notify.mjs";
+
+/** Injected into MCP clients that honor initialize.instructions (Router pattern). */
+export const CYCLE_MCP_INSTRUCTIONS = `
+cycle-coded NOTIFY MODE (like Router "Sync this to Router?"):
+
+WHEN TO PROPOSE (active mode — default):
+At noteworthy moments in the conversation, call cycle_propose_notify with a short
+oneliner (≤20 chars), 2–3 sentence summary, 1–5 tags, optional suggested_mode.
+Then SHOW the preview block from the tool result to the user and ASK:
+
+  "Notify cycle-coded?"
+
+Do NOT call cycle_notify until the user explicitly confirms
+(yes / notify / log it / 记一下 / 好 / go).
+
+Noteworthy moments include:
+- User names a phase/energy shift ("I'm luteal", "so ovulatory", "protect my peace")
+- A ship / demo / hard cut decision that should be mode-tagged
+- Wrapping a session with a real outcome
+- User asks to remember energy/mode for later today
+
+Skip: trivial edits, casual chat, secrets, raw Health export contents.
+
+EXPRESS PATH:
+If user says "notify" / "log this" / "cycle notify" — still call cycle_propose_notify
+first (preview gate), then cycle_notify only after they confirm the preview
+(or they say "skip preview" / "just notify" for that one write).
+
+AFTER CONFIRM:
+Call cycle_notify with the same oneliner/summary/tags. That writes a local log
+under ~/.cycle-coded/ and may fire a macOS notification. Nothing leaves the machine.
+
+Always prefer cycle_get for the live header before proposing.
+`.trim();
 
 const STATE_DIR = process.env.CYCLE_CODED_HOME || path.join(os.homedir(), ".cycle-coded");
 const STATE_FILE = path.join(STATE_DIR, "state.json");
@@ -184,6 +229,76 @@ const TOOLS = [
     description: "Wipe all local cycle-coded state.",
     inputSchema: { type: "object", properties: {} },
   },
+  {
+    name: "cycle_propose_notify",
+    description:
+      "PREVIEW GATE (Router-style). Build a notification preview from the thread. " +
+      "Show the returned preview to the user and ask 'Notify cycle-coded?'. " +
+      "Do NOT write anything. Call cycle_notify only after explicit user confirmation.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        oneliner: {
+          type: "string",
+          description: "≤20 char headline (e.g. 'Luteal cut', 'Demo energy')",
+        },
+        summary: {
+          type: "string",
+          description: "2–3 sentence summary of the noteworthy moment",
+        },
+        tags: {
+          type: "array",
+          items: { type: "string" },
+          description: "1–5 tags (e.g. ovulatory, ship, demo)",
+        },
+        suggested_mode: {
+          type: "string",
+          description: "Optional mode slug to enable if user confirms",
+        },
+        kind: {
+          type: "string",
+          description: "phase-shift | ship | session-wrap | decision | other",
+        },
+      },
+      required: ["oneliner", "summary"],
+    },
+  },
+  {
+    name: "cycle_notify",
+    description:
+      "AFTER USER CONFIRMS a cycle_propose_notify preview: append a local notification " +
+      "and optionally fire a macOS Notification Center banner. Local only — no network. " +
+      "Never call this without prior user confirmation unless preview_mode is never.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        oneliner: { type: "string" },
+        summary: { type: "string" },
+        tags: { type: "array", items: { type: "string" } },
+        suggested_mode: { type: "string" },
+        kind: { type: "string" },
+        macos_banner: {
+          type: "boolean",
+          description: "Override prefs: show macOS banner (default true on darwin)",
+        },
+        confirmed: {
+          type: "boolean",
+          description: "Must be true — agent affirms user confirmed the preview",
+        },
+      },
+      required: ["oneliner", "summary", "confirmed"],
+    },
+  },
+  {
+    name: "cycle_notify_list",
+    description: "List recent local cycle-coded notifications (newest first).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        limit: { type: "number", description: "Max rows (default 10)" },
+      },
+    },
+  },
 ];
 
 function toolResult(obj) {
@@ -260,6 +375,104 @@ function handleTool(name, args = {}) {
     return toolResult({ ok: true, cleared: true, path: STATE_FILE });
   }
 
+  if (name === "cycle_propose_notify") {
+    const cycle = computeCycle(state);
+    const header = buildHeader(state, cycle);
+    const prefs = loadNotifyPrefs();
+    const oneliner = String(args.oneliner || "").slice(0, 40);
+    const summary = String(args.summary || "");
+    const tags = Array.isArray(args.tags) ? args.tags.slice(0, 5) : [];
+    const suggested_mode = args.suggested_mode
+      ? String(args.suggested_mode).trim().toLowerCase().replace(/\s+/g, "-")
+      : null;
+    const kind = args.kind || "other";
+    const preview = formatPreview({
+      oneliner,
+      summary,
+      tags,
+      header,
+      suggested_mode,
+      kind,
+    });
+    return toolResult({
+      ok: true,
+      status: "awaiting_confirmation",
+      notify_mode: prefs.notify_mode,
+      preview_mode: prefs.preview_mode,
+      preview,
+      draft: { oneliner, summary, tags, suggested_mode, kind, header },
+      agent_instruction:
+        "Show `preview` to the user and ask 'Notify cycle-coded?'. " +
+        "Only call cycle_notify after explicit yes. Do not write yet.",
+    });
+  }
+
+  if (name === "cycle_notify") {
+    if (args.confirmed !== true) {
+      return toolResult({
+        ok: false,
+        error: "confirmed must be true. Use cycle_propose_notify first and wait for the user.",
+      });
+    }
+    const cycle = computeCycle(state);
+    const header = buildHeader(state, cycle);
+    const prefs = loadNotifyPrefs();
+    const oneliner = String(args.oneliner || "").slice(0, 40);
+    const summary = String(args.summary || "");
+    const tags = Array.isArray(args.tags) ? args.tags.slice(0, 5) : [];
+    const suggested_mode = args.suggested_mode
+      ? String(args.suggested_mode).trim().toLowerCase().replace(/\s+/g, "-")
+      : null;
+    const kind = args.kind || "other";
+
+    if (suggested_mode) {
+      state.modes = state.modes || {};
+      state.modes[suggested_mode] = true;
+      saveState(state);
+    }
+
+    const entry = appendNotification({
+      oneliner,
+      summary,
+      tags,
+      kind,
+      suggested_mode,
+      header: buildHeader(loadState(), computeCycle(loadState())),
+      phase: cycle.phase,
+      dayInCycle: cycle.dayInCycle,
+    });
+
+    const wantBanner =
+      args.macos_banner !== undefined ? Boolean(args.macos_banner) : prefs.macos_banner;
+    let banner = { ok: false, skipped: true };
+    if (wantBanner) {
+      banner = fireMacOSNotification({
+        title: "cycle-coded",
+        subtitle: oneliner || header,
+        body: summary.slice(0, 180),
+      });
+    }
+
+    return toolResult({
+      ok: true,
+      status: "logged",
+      entry,
+      macos_banner: banner,
+      header: buildHeader(loadState(), computeCycle(loadState())),
+      privacy: "local only under ~/.cycle-coded/",
+      agent_instruction: "Tell the user notification was logged (+ banner if ok). Show oneliner + id.",
+    });
+  }
+
+  if (name === "cycle_notify_list") {
+    const limit = Math.min(50, Math.max(1, Number(args.limit) || 10));
+    return toolResult({
+      ok: true,
+      prefs: loadNotifyPrefs(),
+      notifications: listNotifications(limit),
+    });
+  }
+
   return toolResult({ ok: false, error: `unknown tool: ${name}` });
 }
 
@@ -281,7 +494,8 @@ function handleMessage(msg) {
       result: {
         protocolVersion: "2024-11-05",
         capabilities: { tools: {} },
-        serverInfo: { name: "cycle-coded", version: "0.1.0" },
+        serverInfo: { name: "cycle-coded", version: "0.2.0" },
+        instructions: CYCLE_MCP_INSTRUCTIONS,
       },
     });
     return;
@@ -408,6 +622,39 @@ if (cli && !cli.startsWith("-")) {
     console.log(computeCycle(s, parseDate("2026-07-10")));
     console.log(computeCycle(s, parseDate("2026-07-15")));
     console.log(computeCycle(s, parseDate("2026-07-25")));
+    process.exit(0);
+  }
+
+  if (cli === "notify-test") {
+    // End-to-end local test of Router-style preview → confirm → macOS banner
+    const cycle = computeCycle(loadState());
+    const header = buildHeader(loadState(), cycle);
+    const draft = {
+      oneliner: "Demo energy",
+      summary:
+        "Live dogfood: ovulatory/post-it mode — document before/after and ship the install one-liner. Local Health state only.",
+      tags: ["ovulatory", "dogfood", "docs"],
+      suggested_mode: "walkthrough",
+      kind: "session-wrap",
+    };
+    const propose = handleTool("cycle_propose_notify", draft);
+    const proposeBody = JSON.parse(propose.content[0].text);
+    console.error("\n=== STEP 1: propose (no write) ===\n");
+    console.error(proposeBody.preview);
+    console.error("\n=== STEP 2: simulate user YES → cycle_notify ===\n");
+    const done = handleTool("cycle_notify", {
+      ...draft,
+      confirmed: true,
+      macos_banner: true,
+    });
+    console.log(done.content[0].text);
+    console.error("\n=== STEP 3: list ===\n");
+    console.log(JSON.parse(handleTool("cycle_notify_list", { limit: 3 }).content[0].text));
+    process.exit(0);
+  }
+
+  if (cli === "notify-list") {
+    console.log(JSON.stringify(JSON.parse(handleTool("cycle_notify_list", { limit: 15 }).content[0].text), null, 2));
     process.exit(0);
   }
 

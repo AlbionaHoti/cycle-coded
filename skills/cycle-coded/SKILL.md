@@ -92,6 +92,39 @@ After import, `cycle_get` / `node mcp/server.mjs get` may include `periodHistory
 
 If no MCP, remember in-thread and restate phase when useful.
 
+## Notify gate (Router-style — MCP)
+
+When the **cycle-coded MCP** is connected, mirror Teleport Router's proactive sync:
+
+### WHEN TO PROPOSE
+
+At noteworthy moments, call `cycle_propose_notify` then **show the preview** and ask:
+
+> **Notify cycle-coded?**
+
+Do **not** call `cycle_notify` until the user says yes / notify / log it.
+
+Noteworthy:
+- Phase/energy named explicitly
+- Ship / demo / hard cut decision worth tagging
+- Session wrap with a real outcome
+
+Skip: trivial edits, secrets, raw Health dumps.
+
+### PREVIEW (required)
+
+`cycle_propose_notify` returns `preview` + `draft`. Paste/show that block. Wait.
+
+### AFTER CONFIRM
+
+Call `cycle_notify` with the same fields and `confirmed: true`.
+That logs under `~/.cycle-coded/notifications.jsonl` and may fire a **macOS** notification.
+Local only — no cloud.
+
+### EXPRESS
+
+User says "notify" / "log this" → still preview once, unless they say "skip preview" / "just notify".
+
 ## When to break mode rules
 
 1. **User asks to explain / teach** — full explanation, still no fluff openers/closers, still use headers for skim
