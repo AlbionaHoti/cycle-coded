@@ -34,40 +34,26 @@ Cycle dates (if you import them) stay on **your** computer. No cycle-coded serve
 
 ---
 
-## Install — Claude, Codex, ChatGPT, Gemini, Grok, Cursor
+## Install — one command
 
-**One skill. Same rules. Everywhere.**
-
-```bash
-git clone https://github.com/AlbionaHoti/cycle-coded ./cycle-coded
-cd cycle-coded
-bash install.sh          # links skill for Claude + Codex + Agent Skills
-```
-
-| Surface | How |
-|---|---|
-| **Claude Code** | `claude plugin marketplace add ./cycle-coded` → `claude plugin install cycle-coded@cycle-coded` → `/cycle-coded` |
-| **Codex** | `codex plugin marketplace add AlbionaHoti/cycle-coded --ref main` → `codex plugin add cycle-coded@cycle-coded` → `$cycle-coded` |
-| **skills.sh** | `npx skills add AlbionaHoti/cycle-coded --skill cycle-coded` |
-| **ChatGPT web** | Paste [`instructions/UNIVERSAL.md`](instructions/UNIVERSAL.md) into custom / project instructions |
-| **Gemini** | Paste `UNIVERSAL.md` or use repo [`GEMINI.md`](GEMINI.md) |
-| **Grok** | Paste `UNIVERSAL.md` into custom instructions |
-| **Cursor** | Repo ships [`.cursor/rules/cycle-coded.mdc`](.cursor/rules/cycle-coded.mdc) |
-| **Any chat** | Paste `UNIVERSAL.md` as system prompt |
-
-Full detail: **[INSTALL.md](INSTALL.md)**
-
-### Your real phase (local only — Apple Health)
+**One skill. Same rules. Everywhere** (Claude, Codex, ChatGPT, Gemini, Grok, Cursor).
 
 ```bash
-node mcp/import-health.mjs path/to/export.xml
-node mcp/server.mjs get
-node scripts/test-local.mjs    # paste packs for every UI → /tmp only
+git clone https://github.com/AlbionaHoti/cycle-coded ./cycle-coded && cd cycle-coded && bash install.sh
 ```
 
-Then paste **only the header** (e.g. `follicular · day 12 · building`) into ChatGPT / Gemini / Grok — never the Health XML.
+Or:
 
-State: `~/.cycle-coded/` · [PRIVACY.md](PRIVACY.md) · [docs/EXPORTS.md](docs/EXPORTS.md)
+```bash
+curl -fsSL https://raw.githubusercontent.com/AlbionaHoti/cycle-coded/main/scripts/bootstrap.sh | bash
+```
+
+`install.sh` links skills, best-effort plugins, and writes `instructions/ONE_PROMPT.md` for web UIs.
+
+Then: `/cycle-coded` · `$cycle-coded` · or paste **ONE_PROMPT.md** into ChatGPT/Gemini/Grok.
+
+Optional phase: `node mcp/server.mjs get` (local only).  
+Details: [INSTALL.md](INSTALL.md) · [PRIVACY.md](PRIVACY.md)
 
 ---
 

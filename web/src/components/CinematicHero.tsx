@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowUpRight, Check, Copy, Menu, X } from 'lucide-react'
 
+/** Single command — install.sh wires Claude, Codex, Cursor, skills.sh, ONE_PROMPT */
 const INSTALL_CMD = `git clone https://github.com/AlbionaHoti/cycle-coded ./cycle-coded && cd cycle-coded && bash install.sh`
 
 const VIDEOS = [
@@ -279,9 +280,7 @@ export function CinematicHero() {
               className="mt-3 text-[11px] sm:text-xs opacity-70 transition-colors duration-700"
               style={{ fontFamily: 'system-ui, sans-serif', color: ink }}
             >
-              then <code className="opacity-90">/cycle-coded</code> ·{' '}
-              <code className="opacity-90">$cycle-coded</code> · or paste{' '}
-              <code className="opacity-90">instructions/UNIVERSAL.md</code>
+              one command → Claude · Codex · Cursor · skills · web ONE_PROMPT.md
             </p>
           </div>
 

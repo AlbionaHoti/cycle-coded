@@ -202,34 +202,20 @@ Rewrite is ego until three users complain.`}
           <div className="space-y-5 max-w-3xl">
             <Reveal>
               <CopyBlock
-                label="bash · all agents"
-                code={`git clone https://github.com/AlbionaHoti/cycle-coded ./cycle-coded
-cd cycle-coded
-bash install.sh`}
+                label="bash · one command · every agent"
+                code={`git clone https://github.com/AlbionaHoti/cycle-coded ./cycle-coded && cd cycle-coded && bash install.sh`}
               />
             </Reveal>
             <Reveal delay={0.06}>
-              <CopyBlock
-                label="bash · Claude Code"
-                code={`claude plugin marketplace add ./cycle-coded
-claude plugin install cycle-coded@cycle-coded
-# then: /cycle-coded  or  say "i'm luteal"`}
-              />
-            </Reveal>
-            <Reveal delay={0.1}>
-              <CopyBlock
-                label="bash · Codex"
-                code={`codex plugin marketplace add AlbionaHoti/cycle-coded --ref main
-codex plugin add cycle-coded@cycle-coded`}
-              />
-            </Reveal>
-            <Reveal delay={0.14}>
-              <CopyBlock
-                label="bash · local phase"
-                code={`node mcp/import-health.mjs path/to/export.xml
-node mcp/server.mjs get
-# paste only the header into any chat`}
-              />
+              <p
+                className="text-sm text-ink/50"
+                style={{ fontFamily: 'system-ui, sans-serif' }}
+              >
+                That installs Claude + Codex + Cursor hooks and writes{' '}
+                <code className="text-hot">instructions/ONE_PROMPT.md</code> for
+                ChatGPT / Gemini / Grok. Optional phase:{' '}
+                <code className="text-hot">node mcp/server.mjs get</code>
+              </p>
             </Reveal>
           </div>
         </section>
