@@ -233,7 +233,32 @@ export function printHelp() {
   out.write("\n");
   out.write(wordmark() + "\n\n");
   out.write(c(HOT, "  ♡ commands\n"));
-  out.write(c(SOFT, "    get | set | clear | banner | help\n\n"));
+  out.write(
+    c(SOFT, "    get | check | brief | set | clear | banner | notify-test | help\n\n")
+  );
   out.write(c(HOT, "  ♡ import\n"));
   out.write(c(SOFT, "    node import-health.mjs path/to/export.xml\n\n"));
+}
+
+/** Big phase-change card for terminal */
+export function printPhaseBrief(brief, { changed = false } = {}) {
+  const out = process.stderr;
+  out.write("\n");
+  out.write(wordmark() + "\n");
+  if (changed) {
+    out.write(c(BERRY + BOLD, "\n  ⚡  P H A S E   C H A N G E\n"));
+  }
+  out.write(c(HOT, brief.ascii) + "\n");
+  out.write(
+    box([
+      c(BOLD + CREAM, brief.title),
+      c(SOFT, brief.why),
+      c(SOFT, "·".repeat(28)),
+      ...brief.work.map((w) => c(PINK, "• ") + c(CREAM, w)),
+      c(SOFT, "·".repeat(28)),
+      c(HOT, "DO NOW  ") + c(CREAM, brief.do_now),
+      c(LILAC, "AVOID   ") + c(SOFT, brief.avoid),
+    ]) + "\n"
+  );
+  out.write(c(DIM + SOFT, "  not medical advice · output policy only\n\n"));
 }

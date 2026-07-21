@@ -21,7 +21,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { printStatus, printCleared, printHelp } from "./banner.mjs";
+import { printStatus, printCleared, printHelp, printPhaseBrief } from "./banner.mjs";
 import {
   appendNotification,
   fireMacOSNotification,
@@ -30,6 +30,7 @@ import {
   loadNotifyPrefs,
   saveNotifyPrefs,
 } from "./notify.mjs";
+import { buildPhaseBrief } from "./phase-brief.mjs";
 
 /** Injected into MCP clients that honor initialize.instructions (Router pattern). */
 export const CYCLE_MCP_INSTRUCTIONS = `
@@ -63,6 +64,11 @@ Call cycle_notify with the same oneliner/summary/tags. That writes a local log
 under ~/.cycle-coded/ and may fire a macOS notification. Nothing leaves the machine.
 
 Always prefer cycle_get for the live header before proposing.
+
+PHASE CHANGE:
+When cycle_get or cycle_phase_brief returns phase_changed: true, IMMEDIATELY
+show the full brief.text ASCII block to the user in chat — what mode they are
+in, WHY, DO NOW, AVOID. Do not wait for them to ask. One clear notification.
 `.trim();
 
 const STATE_DIR = process.env.CYCLE_CODED_HOME || path.join(os.homedir(), ".cycle-coded");
@@ -299,6 +305,26 @@ const TOOLS = [
       },
     },
   },
+  {
+    name: "cycle_phase_brief",
+    description:
+      "Return beautiful phase briefing (ASCII + why this work mode + do now / avoid). " +
+      "Call at session start and whenever phase may have changed. If phase_changed is true, " +
+      "show brief.text to the user immediately in chat.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        force: {
+          type: "boolean",
+          description: "If true, treat as change even if phase matches last announced",
+        },
+        macos_banner: {
+          type: "boolean",
+          description: "If phase changed, fire macOS notification (default true on change)",
+        },
+      },
+    },
+  },
 ];
 
 function toolResult(obj) {
@@ -334,13 +360,31 @@ function handleTool(name, args = {}) {
 
   if (name === "cycle_get") {
     const cycle = computeCycle(state);
+    const header = buildHeader(state, cycle);
+    const lastPhase = state.lastAnnouncedPhase || null;
+    const phase_changed = Boolean(cycle.phase && lastPhase && cycle.phase !== lastPhase);
+    const brief = cycle.phase
+      ? buildPhaseBrief({
+          phase: cycle.phase,
+          dayInCycle: cycle.dayInCycle,
+          cycleLength: cycle.cycleLength,
+          header,
+          changed: phase_changed || !lastPhase,
+        })
+      : null;
     return toolResult({
       ok: true,
       cycle,
       modes: state.modes,
-      header: buildHeader(state, cycle),
+      header,
+      phase_changed,
+      last_announced_phase: lastPhase,
+      brief,
       statePath: STATE_FILE,
       disclaimer: "Output policy only. Not medical advice.",
+      agent_instruction: phase_changed
+        ? "PHASE CHANGED — paste brief.text into the chat for the user right now."
+        : "Use header as mode. Call cycle_phase_brief for full ASCII briefing.",
     });
   }
 
@@ -473,6 +517,67 @@ function handleTool(name, args = {}) {
     });
   }
 
+  if (name === "cycle_phase_brief") {
+    const cycle = computeCycle(state);
+    if (!cycle.configured || !cycle.phase) {
+      return toolResult({
+        ok: false,
+        error: "No period start set. cycle_set_period or import Health first.",
+      });
+    }
+    const header = buildHeader(state, cycle);
+    const lastPhase = state.lastAnnouncedPhase || null;
+    const force = Boolean(args.force);
+    const phase_changed = force || !lastPhase || lastPhase !== cycle.phase;
+    const brief = buildPhaseBrief({
+      phase: cycle.phase,
+      dayInCycle: cycle.dayInCycle,
+      cycleLength: cycle.cycleLength,
+      header,
+      changed: phase_changed && lastPhase && lastPhase !== cycle.phase,
+    });
+
+    // Remember announcement so next call only fires on real change
+    if (phase_changed || force) {
+      state.lastAnnouncedPhase = cycle.phase;
+      state.lastAnnouncedAt = new Date().toISOString();
+      saveState(state);
+
+      const wantBanner =
+        args.macos_banner !== undefined
+          ? Boolean(args.macos_banner)
+          : phase_changed && lastPhase && lastPhase !== cycle.phase;
+      let banner = { ok: false, skipped: true };
+      if (wantBanner) {
+        banner = fireMacOSNotification({
+          title: `cycle-coded · ${brief.title}`,
+          subtitle: header,
+          body: brief.why.slice(0, 160),
+        });
+      }
+
+      return toolResult({
+        ok: true,
+        phase_changed: Boolean(lastPhase && lastPhase !== cycle.phase) || force,
+        header,
+        brief,
+        macos_banner: banner,
+        previous_phase: lastPhase,
+        agent_instruction:
+          "Show brief.text (full ASCII) to the user immediately. Explain DO NOW / AVOID in plain language.",
+      });
+    }
+
+    return toolResult({
+      ok: true,
+      phase_changed: false,
+      header,
+      brief,
+      previous_phase: lastPhase,
+      agent_instruction: "Phase unchanged. brief.text still available if user wants a recap.",
+    });
+  }
+
   return toolResult({ ok: false, error: `unknown tool: ${name}` });
 }
 
@@ -573,6 +678,24 @@ if (cli && !cli.startsWith("-")) {
       console.log(JSON.stringify(payload, null, 2));
     }
     process.exit(0);
+  }
+
+  if (cli === "brief" || cli === "check") {
+    const force = process.argv.includes("--force") || cli === "brief";
+    const asJson = process.env.CYCLE_CODED_JSON === "1" || process.argv.includes("--json");
+    const result = handleTool("cycle_phase_brief", {
+      force,
+      macos_banner: !process.argv.includes("--no-banner"),
+    });
+    const body = JSON.parse(result.content[0].text);
+    // Always pretty ASCII to stderr unless --json (so pipes still get header on stdout)
+    if (!asJson && body.brief) {
+      printPhaseBrief(body.brief, { changed: body.phase_changed });
+      console.log(body.header || "");
+    } else {
+      console.log(JSON.stringify(body, null, 2));
+    }
+    process.exit(body.ok ? 0 : 1);
   }
 
   if (cli === "clear") {

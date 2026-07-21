@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { ArrowUpRight, Check, Copy, Menu, X } from 'lucide-react'
+import { BeforeAfter } from './BeforeAfter'
 
 /**
- * Single-screen landing: cinematic train view + what cycle-coded is + one install.
- * Reverts to video + train-window overlay (not WebGL plane).
+ * Single-screen landing: train view + what it is + one install.
+ * #before-after → contrast page (install-ready).
  */
 
 const INSTALL_CMD = `git clone https://github.com/AlbionaHoti/cycle-coded ./cycle-coded && cd cycle-coded && bash install.sh`
@@ -17,16 +18,50 @@ const TRAIN_FRAME = '/train-window.png'
 
 const ease = 'cubic-bezier(0.4, 0, 0.2, 1)'
 
+function useHashView() {
+  const [view, setView] = useState(() =>
+    typeof window !== 'undefined' &&
+    (window.location.hash === '#before-after' ||
+      new URLSearchParams(window.location.search).get('view') === 'before-after')
+      ? 'before-after'
+      : 'home',
+  )
+  useEffect(() => {
+    const onHash = () => {
+      setView(window.location.hash === '#before-after' ? 'before-after' : 'home')
+    }
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+  return {
+    view,
+    goBeforeAfter: () => {
+      window.location.hash = 'before-after'
+      setView('before-after')
+    },
+    goHome: () => {
+      window.location.hash = ''
+      setView('home')
+    },
+  }
+}
+
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+  const { view, goBeforeAfter, goHome } = useHashView()
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    document.body.style.overflow = menuOpen || view === 'before-after' ? 'hidden' : ''
+    if (view === 'before-after') document.body.style.overflow = 'auto'
     return () => {
       document.body.style.overflow = ''
     }
-  }, [menuOpen])
+  }, [menuOpen, view])
+
+  if (view === 'before-after') {
+    return <BeforeAfter onBack={goHome} />
+  }
 
   async function copyInstall() {
     try {
@@ -86,13 +121,14 @@ export default function App() {
             >
               GitHub
             </a>
-            <a
-              href="https://github.com/AlbionaHoti/cycle-coded/blob/main/INSTALL.md"
+            <button
+              type="button"
+              onClick={goBeforeAfter}
               className="px-3 py-2 text-sm text-white/90 hover:text-white transition-colors"
               style={{ fontFamily: 'system-ui, sans-serif' }}
             >
-              Docs
-            </a>
+              Before / After
+            </button>
             <a
               href="https://github.com/AlbionaHoti/cycle-coded"
               className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-white text-black text-sm font-medium px-4 py-2 hover:bg-white/90 transition-colors"
@@ -146,14 +182,17 @@ export default function App() {
             >
               GitHub
             </a>
-            <a
-              href="https://github.com/AlbionaHoti/cycle-coded/blob/main/INSTALL.md"
+            <button
+              type="button"
               className="text-white text-3xl"
               style={{ fontFamily: "'Instrument Serif', serif" }}
-              onClick={() => setMenuOpen(false)}
+              onClick={() => {
+                setMenuOpen(false)
+                goBeforeAfter()
+              }}
             >
-              Docs
-            </a>
+              Before / After
+            </button>
           </div>
         </div>
 
