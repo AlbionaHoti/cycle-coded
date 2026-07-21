@@ -240,25 +240,46 @@ export function printHelp() {
   out.write(c(SOFT, "    node import-health.mjs path/to/export.xml\n\n"));
 }
 
-/** Big phase-change card for terminal */
+/** Big phase-change card for terminal — rest / ship / sell / cut */
 export function printPhaseBrief(brief, { changed = false } = {}) {
   const out = process.stderr;
   out.write("\n");
   out.write(wordmark() + "\n");
   if (changed) {
-    out.write(c(BERRY + BOLD, "\n  ⚡  P H A S E   C H A N G E\n"));
+    out.write(c(BERRY + BOLD, "\n  ⚡  P H A S E   C H A N G E  —  work mode shifted\n"));
   }
-  out.write(c(HOT, brief.ascii) + "\n");
-  out.write(
-    box([
-      c(BOLD + CREAM, brief.title),
-      c(SOFT, brief.why),
-      c(SOFT, "·".repeat(28)),
-      ...brief.work.map((w) => c(PINK, "• ") + c(CREAM, w)),
-      c(SOFT, "·".repeat(28)),
-      c(HOT, "DO NOW  ") + c(CREAM, brief.do_now),
-      c(LILAC, "AVOID   ") + c(SOFT, brief.avoid),
-    ]) + "\n"
-  );
-  out.write(c(DIM + SOFT, "  not medical advice · output policy only\n\n"));
+  out.write(c(HOT, brief.ascii || "") + "\n");
+
+  const rows = [
+    c(BOLD + CREAM, brief.title),
+    c(SOFT, brief.vibe_line || brief.why),
+    c(SOFT, "·".repeat(32)),
+    c(HOT, "REST  ") + c(CREAM, brief.rest?.yes || ""),
+    c(PINK, "SHIP  ") + c(CREAM, brief.ship?.yes || ""),
+    c(BERRY, "SELL  ") + c(CREAM, brief.sell?.yes || ""),
+    c(LILAC, "CUT   ") + c(CREAM, brief.cut?.yes || ""),
+    c(SOFT, "·".repeat(32)),
+    c(HOT, "NOW   ") + c(CREAM, brief.do_now),
+    c(LILAC, "AVOID ") + c(SOFT, brief.avoid),
+  ];
+
+  if (brief.terminal?.do_cmds) {
+    rows.push(
+      c(SOFT, "·".repeat(32)),
+      c(PINK, "TERM  ") + c(SOFT, brief.terminal.do_cmds.join(" · ")),
+      c(SOFT, "skip  ") + c(DIM + SOFT, (brief.terminal.skip_cmds || []).join(" · "))
+    );
+  }
+
+  out.write(box(rows) + "\n");
+
+  if (brief.best_for?.length) {
+    out.write(c(HOT, "  best for\n"));
+    for (const b of brief.best_for) {
+      out.write(c(CREAM, `    ♡ ${b}\n`));
+    }
+    out.write("\n");
+  }
+
+  out.write(c(DIM + SOFT, "  not medical advice · phase → work policy only\n\n"));
 }
