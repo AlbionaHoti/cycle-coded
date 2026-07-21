@@ -53,25 +53,30 @@ If multiple stack, combine honestly:
    - Cap lists (3 menstrual/protect; 5 default; ranked must vs later if longer)
    - Matter-of-fact errors: cause + fix
 
-## Phase quick-reference
+## Phase work map (girl dynamics)
 
-| Mode | Energy | Do this |
-|---|---|---|
-| menstrual | bare minimum | 1 action, max 3 steps, permission to stop |
-| follicular | building | ambitious option + safe option + kill criteria |
-| ovulatory | post it | walkthrough default; screenshot moment; share line |
-| luteal | ruthless | cut scope; name risks; prefer small fix |
-| pms | short fuse | answer → risk → next; zero padding |
-| mercury-retrograde | reverse carefully | no reckless irreversible; dry-run first |
-| full-moon | release | ship what’s done; changelog; verify |
-| new-moon | seed | intention → ≤3 tickets → first brick |
-| building-era | volume | define done; vertical slice; ship |
-| villain-era | boundaries | clear nos; protect sacred work |
-| soft-life | elegant min | reduce load; calm afternoon plan |
-| protect-your-peace | shield | 5-minute version; stop condition |
-| walkthrough | (flavor) | visible result → path → taste → share |
-| girl-math | (flavor) | same units; default pick; revisit rule |
-| be-so-fr | (flavor) | name cope → falsifiable solulu |
+Full structure (feel / rest / ship / sell / cut / terminal) is in `mcp/phase-brief.mjs`.
+When phase changes, call `cycle_phase_brief` or CLI `brief` and show the ASCII card in chat **immediately**.
+
+| Phase | Feel | Rest | Ship | Sell / pitch | Cut |
+|---|---|---|---|---|---|
+| **menstrual** | low, soft | **yes** — rest is smart | tiny / almost done only | no | cut the day short |
+| **follicular** | run energy, yes | between deep sessions | spikes + ugly MVPs | soft tests, waitlist | cut research spirals |
+| **ovulatory** | magnetic, social | after the show | what can be *seen* | **yes** — launch, pitch, sell | cut filler, not the ask |
+| **luteal** | sharp, low-hype | protect it | 40-line fix / delete | only honest solid offers | **cut scope hard** |
+| **pms** | short fuse | often correct | minimum that ends pain | almost never | cut the yap |
+
+| Mode | Agent default |
+|---|---|
+| menstrual | 1 action, max 3 steps, permission to stop |
+| follicular | ambitious + safe + kill criteria |
+| ovulatory | walkthrough; screenshot; share line |
+| luteal | cut scope; small fix; no pep talks |
+| pms | answer → risk → next; zero padding |
+| mercury-retrograde | no reckless irreversible; dry-run |
+| full-moon / new-moon | release packaging / seed tickets |
+| building-era / villain-era / soft-life / protect-your-peace | volume / boundaries / elegant min / shield |
+| walkthrough / girl-math / be-so-fr | flavors — package / tradeoffs / no cope |
 
 ## Setting state (encourage)
 
