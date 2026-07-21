@@ -157,13 +157,13 @@ export default function App() {
           </div>
         </div>
 
-        {/* Hero — what it is */}
+        {/* Hero — what it is (girl dynamics, not product jargon) */}
         <div className="flex-1 flex flex-col items-center justify-center text-center pt-4 pb-4">
           <p
             className="liquid-glass-hero rounded-full px-5 sm:px-6 py-2 sm:py-2.5 mb-5 sm:mb-6 text-white text-sm sm:text-base md:text-lg font-medium tracking-wide"
             style={{ fontFamily: 'system-ui, sans-serif' }}
           >
-            A skill that makes agents speak in cycle · chart · era modes
+            Your agent finally gets the week you&apos;re actually in
           </p>
 
           <h1
@@ -174,17 +174,22 @@ export default function App() {
           </h1>
 
           <p
-            className="max-w-lg text-white/85 text-sm sm:text-base leading-relaxed mb-3 px-2"
-            style={{ fontFamily: 'system-ui, sans-serif' }}
+            className="max-w-xl text-white/90 text-base sm:text-lg md:text-xl leading-snug mb-5 sm:mb-6 px-3"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
           >
-            Agents that know what day it is.
+            PMS is not &ldquo;be nicer.&rdquo; Luteal is not &ldquo;push through.&rdquo;
+            <br className="hidden sm:block" />
+            Some weeks you&apos;re built to run, launch, pitch, sell, brand.
+            <br className="hidden sm:block" />
+            Some weeks you&apos;re built to cut, protect, and say no.
           </p>
           <p
-            className="max-w-md text-white/65 text-xs sm:text-sm leading-relaxed mb-8 sm:mb-10 px-2"
+            className="max-w-lg text-white/70 text-xs sm:text-sm leading-relaxed mb-8 sm:mb-10 px-3"
             style={{ fontFamily: 'system-ui, sans-serif' }}
           >
-            Luteal cuts. Follicular ships. Same question — different answer.
-            Works on Claude, Codex, ChatGPT, Gemini, Grok. Local-only cycle data.
+            Same question. Different day. Different correct answer.
+            A skill so Claude, Codex, ChatGPT, Gemini, Grok stop talking like every Tuesday is the same.
+            Your cycle data stays on your machine.
           </p>
 
           {/* One install */}
