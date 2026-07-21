@@ -1,27 +1,32 @@
-import { Suspense, useState } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { ScrollControls, Scroll, useProgress, Html } from '@react-three/drei'
-import { Check, Copy } from 'lucide-react'
-import { TrainScene } from './components/TrainScene'
+import { useEffect, useState } from 'react'
+import { ArrowUpRight, Check, Copy, Menu, X } from 'lucide-react'
+
+/**
+ * Single-screen landing: cinematic train view + what cycle-coded is + one install.
+ * Reverts to video + train-window overlay (not WebGL plane).
+ */
 
 const INSTALL_CMD = `git clone https://github.com/AlbionaHoti/cycle-coded ./cycle-coded && cd cycle-coded && bash install.sh`
 
-function Loader() {
-  const { progress } = useProgress()
-  return (
-    <Html center>
-      <div
-        className="text-white/80 text-sm tracking-widest uppercase"
-        style={{ fontFamily: 'system-ui, sans-serif' }}
-      >
-        {progress.toFixed(0)}%
-      </div>
-    </Html>
-  )
-}
+/** Soft exterior light — feels like looking out a train window */
+const VIDEO =
+  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260702_081127_0992a171-d3c6-4978-8213-0ec5df8b6d63.mp4'
 
-function Hud() {
+/** Local train-frame overlay (looking outside) */
+const TRAIN_FRAME = '/train-window.png'
+
+const ease = 'cubic-bezier(0.4, 0, 0.2, 1)'
+
+export default function App() {
+  const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [menuOpen])
 
   async function copyInstall() {
     try {
@@ -39,113 +44,207 @@ function Hud() {
   }
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-10 flex flex-col">
-      {/* top brand */}
-      <header className="pointer-events-auto flex items-center justify-between px-5 sm:px-8 pt-6 sm:pt-8">
-        <a
-          href="https://github.com/AlbionaHoti/cycle-coded"
-          className="text-white italic text-xl sm:text-2xl drop-shadow-lg"
-          style={{ fontFamily: "'Instrument Serif', serif" }}
-        >
-          cycle-coded
-        </a>
-        <span
-          className="text-white/70 text-[10px] sm:text-xs tracking-[0.2em] uppercase"
-          style={{ fontFamily: 'system-ui, sans-serif' }}
-        >
-          scroll to fly
-        </span>
-      </header>
+    <section className="relative w-full h-screen overflow-hidden bg-black">
+      {/* Exterior through the window */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover"
+        src={VIDEO}
+        autoPlay
+        muted
+        loop
+        playsInline
+      />
 
-      {/* center title — minimal */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 text-center">
-        <p
-          className="liquid-glass-hero rounded-full px-5 py-2 mb-5 text-white text-sm sm:text-base font-medium tracking-wide pointer-events-auto"
-          style={{ fontFamily: 'system-ui, sans-serif' }}
-        >
-          Agents that finally speak phase — local only ♡
-        </p>
-        <h1
-          className="text-white text-4xl sm:text-5xl md:text-7xl leading-[1.08] max-w-3xl drop-shadow-2xl mb-8"
-          style={{ fontFamily: "'Instrument Serif', serif" }}
-        >
-          Agents that know
-          <br />
-          what day it is
-        </h1>
+      {/* Soft grade */}
+      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/55 via-black/15 to-black/35 pointer-events-none" />
+      <div className="absolute inset-0 z-[1] bg-pink-500/10 mix-blend-soft-light pointer-events-none" />
 
-        {/* single transparent install */}
-        <div className="pointer-events-auto w-full max-w-xl mx-auto">
-          <div className="liquid-glass-hero rounded-2xl overflow-hidden text-left border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
-            <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-white/10">
-              <span
-                className="text-[11px] tracking-wide uppercase text-white/75"
-                style={{ fontFamily: 'ui-monospace, monospace' }}
-              >
-                install · one command
-              </span>
-              <button
-                type="button"
-                onClick={copyInstall}
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 hover:bg-white/20 px-3 py-1 text-[11px] text-white transition-colors"
-                style={{ fontFamily: 'system-ui, sans-serif' }}
-              >
-                {copied ? (
-                  <>
-                    <Check size={12} /> Copied
-                  </>
-                ) : (
-                  <>
-                    <Copy size={12} /> Copy
-                  </>
-                )}
-              </button>
-            </div>
-            <pre
-              className="px-4 py-3.5 text-[11px] sm:text-[12px] leading-relaxed text-white/95 overflow-x-auto whitespace-pre-wrap break-all m-0"
-              style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}
+      {/* Train frame — looking outside */}
+      <img
+        src={TRAIN_FRAME}
+        alt=""
+        aria-hidden
+        className="absolute inset-0 z-[2] w-full h-full object-cover pointer-events-none train-bob"
+      />
+
+      {/* Content */}
+      <div className="relative z-[3] flex flex-col h-full px-4 sm:px-6 md:px-10 lg:px-14 py-5 sm:py-6">
+        <nav className="flex items-center justify-between w-full">
+          <a
+            href="https://github.com/AlbionaHoti/cycle-coded"
+            className="text-white italic text-xl sm:text-2xl drop-shadow-md"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+          >
+            cycle-coded
+          </a>
+
+          <div className="hidden md:flex items-center gap-1 liquid-glass-hero rounded-full pl-5 pr-1.5 py-1.5">
+            <a
+              href="https://github.com/AlbionaHoti/cycle-coded"
+              className="px-3 py-2 text-sm text-white/90 hover:text-white transition-colors"
+              style={{ fontFamily: 'system-ui, sans-serif' }}
             >
-              <span className="text-white/50">$ </span>
-              {INSTALL_CMD}
-            </pre>
+              GitHub
+            </a>
+            <a
+              href="https://github.com/AlbionaHoti/cycle-coded/blob/main/INSTALL.md"
+              className="px-3 py-2 text-sm text-white/90 hover:text-white transition-colors"
+              style={{ fontFamily: 'system-ui, sans-serif' }}
+            >
+              Docs
+            </a>
+            <a
+              href="https://github.com/AlbionaHoti/cycle-coded"
+              className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-white text-black text-sm font-medium px-4 py-2 hover:bg-white/90 transition-colors"
+              style={{ fontFamily: 'system-ui, sans-serif' }}
+            >
+              Star
+              <ArrowUpRight size={14} />
+            </a>
+          </div>
+
+          <button
+            type="button"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setMenuOpen((o) => !o)}
+            className="md:hidden relative w-11 h-11 liquid-glass-hero rounded-full flex items-center justify-center"
+          >
+            <Menu
+              size={20}
+              className={`absolute text-white transition-all duration-300 ${
+                menuOpen ? 'opacity-0 scale-75 rotate-90' : 'opacity-100 scale-100 rotate-0'
+              }`}
+            />
+            <X
+              size={20}
+              className={`absolute text-white transition-all duration-300 ${
+                menuOpen ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-90'
+              }`}
+            />
+          </button>
+        </nav>
+
+        {/* Mobile menu */}
+        <div
+          className={`fixed inset-0 z-50 md:hidden transition-all duration-500 ${
+            menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+          }`}
+          style={{ transitionTimingFunction: ease }}
+        >
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            aria-label="Close"
+            onClick={() => setMenuOpen(false)}
+          />
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-8">
+            <a
+              href="https://github.com/AlbionaHoti/cycle-coded"
+              className="text-white text-3xl"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+              onClick={() => setMenuOpen(false)}
+            >
+              GitHub
+            </a>
+            <a
+              href="https://github.com/AlbionaHoti/cycle-coded/blob/main/INSTALL.md"
+              className="text-white text-3xl"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+              onClick={() => setMenuOpen(false)}
+            >
+              Docs
+            </a>
           </div>
         </div>
+
+        {/* Hero — what it is */}
+        <div className="flex-1 flex flex-col items-center justify-center text-center pt-4 pb-4">
+          <p
+            className="liquid-glass-hero rounded-full px-5 sm:px-6 py-2 sm:py-2.5 mb-5 sm:mb-6 text-white text-sm sm:text-base md:text-lg font-medium tracking-wide"
+            style={{ fontFamily: 'system-ui, sans-serif' }}
+          >
+            A skill that makes agents speak in cycle · chart · era modes
+          </p>
+
+          <h1
+            className="text-white text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] leading-[1.08] max-w-4xl mb-4 sm:mb-5 drop-shadow-2xl"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+          >
+            cycle-coded
+          </h1>
+
+          <p
+            className="max-w-lg text-white/85 text-sm sm:text-base leading-relaxed mb-3 px-2"
+            style={{ fontFamily: 'system-ui, sans-serif' }}
+          >
+            Agents that know what day it is.
+          </p>
+          <p
+            className="max-w-md text-white/65 text-xs sm:text-sm leading-relaxed mb-8 sm:mb-10 px-2"
+            style={{ fontFamily: 'system-ui, sans-serif' }}
+          >
+            Luteal cuts. Follicular ships. Same question — different answer.
+            Works on Claude, Codex, ChatGPT, Gemini, Grok. Local-only cycle data.
+          </p>
+
+          {/* One install */}
+          <div className="w-full max-w-xl mx-auto px-1">
+            <div className="liquid-glass-hero rounded-2xl overflow-hidden text-left shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+              <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-white/10">
+                <span
+                  className="text-[11px] sm:text-xs tracking-wide uppercase text-white/75"
+                  style={{ fontFamily: 'ui-monospace, monospace' }}
+                >
+                  install · one command
+                </span>
+                <button
+                  type="button"
+                  onClick={copyInstall}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 hover:bg-white/20 px-3 py-1 text-[11px] sm:text-xs text-white transition-colors"
+                  style={{ fontFamily: 'system-ui, sans-serif' }}
+                >
+                  {copied ? (
+                    <>
+                      <Check size={12} /> Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={12} /> Copy
+                    </>
+                  )}
+                </button>
+              </div>
+              <pre
+                className="px-4 py-3.5 text-[11px] sm:text-[12px] leading-relaxed text-white/95 overflow-x-auto whitespace-pre-wrap break-all m-0"
+                style={{
+                  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                }}
+              >
+                <span className="text-white/50">$ </span>
+                {INSTALL_CMD}
+              </pre>
+            </div>
+            <p
+              className="mt-3 text-[11px] sm:text-xs text-white/55"
+              style={{ fontFamily: 'system-ui, sans-serif' }}
+            >
+              then <code className="text-white/75">/cycle-coded</code> or paste{' '}
+              <code className="text-white/75">ONE_PROMPT.md</code> · not medical advice
+            </p>
+          </div>
+        </div>
+
+        <div
+          className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-white/55 text-xs sm:text-sm pb-1"
+          style={{ fontFamily: 'system-ui, sans-serif' }}
+        >
+          <span>phase modes</span>
+          <span className="opacity-40">·</span>
+          <span>local-first</span>
+          <span className="opacity-40">·</span>
+          <span>no cloud</span>
+        </div>
       </div>
-
-      <footer
-        className="pb-6 sm:pb-8 text-center text-white/45 text-[10px] sm:text-xs tracking-wide"
-        style={{ fontFamily: 'system-ui, sans-serif' }}
-      >
-        scroll · one image · local only · not medical advice
-      </footer>
-    </div>
-  )
-}
-
-export default function App() {
-  return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#12030a]">
-      <Hud />
-
-      <Canvas
-        className="absolute inset-0"
-        gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
-        dpr={[1, 1.75]}
-        camera={{ position: [0, 0, 2.4], fov: 45, near: 0.1, far: 50 }}
-      >
-        <color attach="background" args={['#12030a']} />
-        <fogExp2 attach="fog" args={['#1a0812', 0.03]} />
-        <ambientLight intensity={0.9} />
-
-        <Suspense fallback={<Loader />}>
-          {/* pages=3 → extra scroll height for fly-through */}
-          <ScrollControls pages={2.4} damping={0.18}>
-            <TrainScene />
-            {/* empty scroll spacer (HUD is DOM, not Scroll html) */}
-            <Scroll />
-          </ScrollControls>
-        </Suspense>
-      </Canvas>
-    </div>
+    </section>
   )
 }

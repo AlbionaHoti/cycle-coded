@@ -9,7 +9,7 @@ body,
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #12030a;
+  background: #000;
 }
 
 body {
@@ -23,7 +23,6 @@ body {
   color: #fff;
 }
 
-/* Liquid glass — cinematic HUD */
 .liquid-glass-hero {
   background: rgba(255, 255, 255, 0.06);
   background-blend-mode: luminosity;
@@ -58,4 +57,25 @@ body {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
+}
+
+@keyframes train-bob {
+  0%,
+  100% {
+    transform: scale(1.03) translateY(0);
+  }
+  50% {
+    transform: scale(1.03) translateY(-6px);
+  }
+}
+
+.train-bob {
+  animation: train-bob 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .train-bob {
+    animation: none;
+    transform: scale(1.03);
+  }
 }
