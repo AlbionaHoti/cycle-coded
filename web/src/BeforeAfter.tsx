@@ -118,8 +118,8 @@ export function BeforeAfter({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#12030a] text-white overflow-y-auto">
-      <div className="max-w-3xl mx-auto px-5 sm:px-8 py-10 sm:py-14">
+    <div className="min-h-screen bg-[#12030a] text-white overflow-x-hidden overflow-y-auto">
+      <div className="max-w-3xl mx-auto px-5 sm:px-8 py-10 sm:py-14 pb-24">
         <button
           type="button"
           onClick={onBack}

@@ -7,15 +7,24 @@ body,
 #root {
   margin: 0;
   width: 100%;
+  min-height: 100%;
+  background: #000;
+}
+
+/* Home locks scroll via .page-lock; before-after needs free scroll */
+html.page-lock,
+html.page-lock body,
+html.page-lock #root {
   height: 100%;
   overflow: hidden;
-  background: #000;
 }
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 ::selection {

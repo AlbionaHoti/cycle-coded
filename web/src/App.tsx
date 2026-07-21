@@ -52,9 +52,12 @@ export default function App() {
   const { view, goBeforeAfter, goHome } = useHashView()
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen || view === 'before-after' ? 'hidden' : ''
-    if (view === 'before-after') document.body.style.overflow = 'auto'
+    // Home = lock viewport. Before/after = free scroll.
+    const lock = view === 'home' || menuOpen
+    document.documentElement.classList.toggle('page-lock', lock)
+    document.body.style.overflow = lock ? 'hidden' : 'auto'
     return () => {
+      document.documentElement.classList.remove('page-lock')
       document.body.style.overflow = ''
     }
   }, [menuOpen, view])
