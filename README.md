@@ -1,18 +1,27 @@
 <p align="center">
+  <img src="docs/cover.gif" alt="cycle-coded — train window landing" width="100%" />
+</p>
+
+<p align="center">
   <strong>cycle-coded</strong>
 </p>
 <p align="center">
-  Claude that speaks cycle, chart, and era language — and obeys it.
+  Your agent finally gets the week you're actually in — PMS, luteal cut, launch-and-sell.
 </p>
 <p align="center">
-  <em>Glossary-first. Runs on your computer. No cycle-coded server. Not medical advice.</em>
+  <em>Same question. Different day. Different correct answer. Not medical advice.</em>
 </p>
 
 <p align="center">
   <a href="GLOSSARY.md">Glossary</a> ·
   <a href="INSTALL.md">Install</a> ·
+  <a href="docs/BEFORE_AFTER.md">Before / After</a> ·
   <a href="PRIVACY.md">Privacy</a> ·
-  <a href="web/">Site (Vite)</a>
+  <a href="web/">Site</a>
+</p>
+
+<p align="center">
+  <img src="docs/cover.png" alt="cycle-coded cover" width="100%" />
 </p>
 
 ---
